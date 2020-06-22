@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html style="display: none;" lang="zh">
+    <head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    <!--
+        © Material Theme
+        https://github.com/viosey/hexo-theme-material
+        Version: 1.5.2 -->
+    <script>
+        window.materialVersion = "1.5.2"
+        // Delete localstorage with these tags
+        window.oldVersion = [
+            'codestartv1',
+            '1.3.4',
+            '1.4.0',
+            '1.4.0b1',
+            '1.5.0'
+        ]
+    </script>
+
+    <!-- dns prefetch -->
+    <meta http-equiv="x-dns-prefetch-control" content="on">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <!-- Meta & Info -->
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <!-- Title -->
+    
+    <title>
+        
+            MySQL之索引 | 
+        
+        SCHHX
+    </title>
+
+    <!-- Favicons -->
+    <link rel="icon shortcut" type="image/ico" href="/img/favicon.png">
+    <link rel="icon" href="/img/favicon.png">
+
+    <meta name="format-detection" content="telephone=no">
+    <meta name="description" itemprop="description" content="索引是存储引擎快速找到记录的一种数据结构，索引对于良好的性能非常关键，尤其是当表中的数据越来越大时。">
+    <meta name="keywords" content=",MySQL">
+    <meta name="theme-color" content="#0097A7">
+
+    <!-- Disable Fucking Bloody Baidu Tranformation -->
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+
+    <!--[if lte IE 9]>
+        <link rel="stylesheet" href="/css/ie-blocker.css">
+
+        
+            <script src="/js/ie-blocker.zhCN.js"></script>
+        
+    <![endif]-->
+
+    <!-- Import lsloader -->
+    <script>(function(){window.lsloader={jsRunSequence:[],jsnamemap:{},cssnamemap:{}};lsloader.removeLS=function(a){try{localStorage.removeItem(a)}catch(b){}};lsloader.setLS=function(a,c){try{localStorage.setItem(a,c)}catch(b){}};lsloader.getLS=function(a){var c="";try{c=localStorage.getItem(a)}catch(b){c=""}return c};versionString="/*"+(window.materialVersion||"unknownVersion")+"*/";lsloader.clean=function(){try{var b=[];for(var a=0;a<localStorage.length;a++){b.push(localStorage.key(a))}b.forEach(function(e){var f=lsloader.getLS(e);if(window.oldVersion){var d=window.oldVersion.reduce(function(g,h){return g||f.indexOf("/*"+h+"*/")!==-1},false);if(d){lsloader.removeLS(e)}}})}catch(c){}};lsloader.clean();lsloader.load=function(f,a,b,d){if(typeof b==="boolean"){d=b;b=undefined}d=d||false;b=b||function(){};var e;e=this.getLS(f);if(e&&e.indexOf(versionString)===-1){this.removeLS(f);this.requestResource(f,a,b,d);return}if(e){var c=e.split(versionString)[0];if(c!=a){console.log("reload:"+a);this.removeLS(f);this.requestResource(f,a,b,d);return}e=e.split(versionString)[1];if(d){this.jsRunSequence.push({name:f,code:e});this.runjs(a,f,e)}else{document.getElementById(f).appendChild(document.createTextNode(e));b()}}else{this.requestResource(f,a,b,d)}};lsloader.requestResource=function(b,e,a,c){var d=this;if(c){this.iojs(e,b,function(h,f,g){d.setLS(f,h+versionString+g);d.runjs(h,f,g)})}else{this.iocss(e,b,function(f){document.getElementById(b).appendChild(document.createTextNode(f));d.setLS(b,e+versionString+f)},a)}};lsloader.iojs=function(d,b,g){var a=this;a.jsRunSequence.push({name:b,code:""});try{var f=new XMLHttpRequest();f.open("get",d,true);f.onreadystatechange=function(){if(f.readyState==4){if((f.status>=200&&f.status<300)||f.status==304){if(f.response!=""){g(d,b,f.response);return}}a.jsfallback(d,b)}};f.send(null)}catch(c){a.jsfallback(d,b)}};lsloader.iocss=function(f,c,h,a){var b=this;try{var g=new XMLHttpRequest();g.open("get",f,true);g.onreadystatechange=function(){if(g.readyState==4){if((g.status>=200&&g.status<300)||g.status==304){if(g.response!=""){h(g.response);a();return}}b.cssfallback(f,c,a)}};g.send(null)}catch(d){b.cssfallback(f,c,a)}};lsloader.iofonts=function(f,c,h,a){var b=this;try{var g=new XMLHttpRequest();g.open("get",f,true);g.onreadystatechange=function(){if(g.readyState==4){if((g.status>=200&&g.status<300)||g.status==304){if(g.response!=""){h(g.response);a();return}}b.cssfallback(f,c,a)}};g.send(null)}catch(d){b.cssfallback(f,c,a)}};lsloader.runjs=function(f,c,e){if(!!c&&!!e){for(var b in this.jsRunSequence){if(this.jsRunSequence[b].name==c){this.jsRunSequence[b].code=e}}}if(!!this.jsRunSequence[0]&&!!this.jsRunSequence[0].code&&this.jsRunSequence[0].status!="failed"){var a=document.createElement("script");a.appendChild(document.createTextNode(this.jsRunSequence[0].code));a.type="text/javascript";document.getElementsByTagName("head")[0].appendChild(a);this.jsRunSequence.shift();if(this.jsRunSequence.length>0){this.runjs()}}else{if(!!this.jsRunSequence[0]&&this.jsRunSequence[0].status=="failed"){var d=this;var a=document.createElement("script");a.src=this.jsRunSequence[0].path;a.type="text/javascript";this.jsRunSequence[0].status="loading";a.onload=function(){d.jsRunSequence.shift();if(d.jsRunSequence.length>0){d.runjs()}};document.body.appendChild(a)}}};lsloader.tagLoad=function(b,a){this.jsRunSequence.push({name:a,code:"",path:b,status:"failed"});this.runjs()};lsloader.jsfallback=function(c,b){if(!!this.jsnamemap[b]){return}else{this.jsnamemap[b]=b}for(var a in this.jsRunSequence){if(this.jsRunSequence[a].name==b){this.jsRunSequence[a].code="";this.jsRunSequence[a].status="failed";this.jsRunSequence[a].path=c}}this.runjs()};lsloader.cssfallback=function(e,c,b){if(!!this.cssnamemap[c]){return}else{this.cssnamemap[c]=1}var d=document.createElement("link");d.type="text/css";d.href=e;d.rel="stylesheet";d.onload=d.onerror=b;var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(d,a)};lsloader.runInlineScript=function(c,b){var a=document.getElementById(b).innerText;this.jsRunSequence.push({name:c,code:a});this.runjs()}})();</script>
+
+    <!-- Import queue -->
+    <script>function Queue(){this.dataStore=[];this.offer=b;this.poll=d;this.execNext=a;this.debug=false;this.startDebug=c;function b(e){if(this.debug){console.log("Offered a Queued Function.")}if(typeof e==="function"){this.dataStore.push(e)}else{console.log("You must offer a function.")}}function d(){if(this.debug){console.log("Polled a Queued Function.")}return this.dataStore.shift()}function a(){var e=this.poll();if(e!==undefined){if(this.debug){console.log("Run a Queued Function.")}e()}}function c(){this.debug=true}}var queue=new Queue();</script>
+
+    <!-- Import CSS -->
+    
+        <style id="material_css"></style><script>if(typeof window.lsLoadCSSMaxNums === "undefined")window.lsLoadCSSMaxNums = 0;window.lsLoadCSSMaxNums++;lsloader.load("material_css","/css/material.min.css?Z7a72R1E4SxzBKR/WGctOA==",function(){if(typeof window.lsLoadCSSNums === "undefined")window.lsLoadCSSNums = 0;window.lsLoadCSSNums++;if(window.lsLoadCSSNums == window.lsLoadCSSMaxNums)document.documentElement.style.display="";}, false)</script>
+        <style id="style_css"></style><script>if(typeof window.lsLoadCSSMaxNums === "undefined")window.lsLoadCSSMaxNums = 0;window.lsLoadCSSMaxNums++;lsloader.load("style_css","/css/style.min.css?MKetZV3cUTfDxvMffaOezg==",function(){if(typeof window.lsLoadCSSNums === "undefined")window.lsLoadCSSNums = 0;window.lsLoadCSSNums++;if(window.lsLoadCSSNums == window.lsLoadCSSMaxNums)document.documentElement.style.display="";}, false)</script>
+
+        
+            
+                <style id="prettify_css"></style><script>if(typeof window.lsLoadCSSMaxNums === "undefined")window.lsLoadCSSMaxNums = 0;window.lsLoadCSSMaxNums++;lsloader.load("prettify_css","/css/prettify.min.css?VbSuLZyOpxJuf3o2tYEOVg==",function(){if(typeof window.lsLoadCSSNums === "undefined")window.lsLoadCSSNums = 0;window.lsLoadCSSNums++;if(window.lsLoadCSSNums == window.lsLoadCSSMaxNums)document.documentElement.style.display="";}, false)</script>
+                <style id="prettify_theme"></style><script>if(typeof window.lsLoadCSSMaxNums === "undefined")window.lsLoadCSSMaxNums = 0;window.lsLoadCSSMaxNums++;lsloader.load("prettify_theme","/css/prettify/github-v2.min.css?AfzKxt++K+/lhZBlSjnxwg==",function(){if(typeof window.lsLoadCSSNums === "undefined")window.lsLoadCSSNums = 0;window.lsLoadCSSNums++;if(window.lsLoadCSSNums == window.lsLoadCSSMaxNums)document.documentElement.style.display="";}, false)</script>
+            
+        
+
+    
+
+    
+
+    <!-- Config CSS -->
+
+<!-- Other Styles -->
+<style>
+  body, html {
+    font-family: Roboto, "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+    overflow-x: hidden !important;
+  }
+  
+  code {
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+  }
+
+  a {
+    color: #00838F;
+  }
+
+  .mdl-card__media,
+  #search-label,
+  #search-form-label:after,
+  #scheme-Paradox .hot_tags-count,
+  #scheme-Paradox .sidebar_archives-count,
+  #scheme-Paradox .sidebar-colored .sidebar-header,
+  #scheme-Paradox .sidebar-colored .sidebar-badge{
+    background-color: #0097A7 !important;
+  }
+
+  /* Sidebar User Drop Down Menu Text Color */
+  #scheme-Paradox .sidebar-colored .sidebar-nav>.dropdown>.dropdown-menu>li>a:hover,
+  #scheme-Paradox .sidebar-colored .sidebar-nav>.dropdown>.dropdown-menu>li>a:focus {
+    color: #0097A7 !important;
+  }
+
+  #post_entry-right-info,
+  .sidebar-colored .sidebar-nav li:hover > a,
+  .sidebar-colored .sidebar-nav li:hover > a i,
+  .sidebar-colored .sidebar-nav li > a:hover,
+  .sidebar-colored .sidebar-nav li > a:hover i,
+  .sidebar-colored .sidebar-nav li > a:focus i,
+  .sidebar-colored .sidebar-nav > .open > a,
+  .sidebar-colored .sidebar-nav > .open > a:hover,
+  .sidebar-colored .sidebar-nav > .open > a:focus,
+  #ds-reset #ds-ctx .ds-ctx-entry .ds-ctx-head a {
+    color: #0097A7 !important;
+  }
+
+  .toTop {
+    background: #757575 !important;
+  }
+
+  .material-layout .material-post>.material-nav,
+  .material-layout .material-index>.material-nav,
+  .material-nav a {
+    color: #757575;
+  }
+
+  #scheme-Paradox .MD-burger-layer {
+    background-color: #757575;
+  }
+
+  #scheme-Paradox #post-toc-trigger-btn {
+    color: #757575;
+  }
+
+  .post-toc a:hover {
+    color: #00838F;
+    text-decoration: underline;
+  }
+
+</style>
+
+
+<!-- Theme Background Related-->
+
+    <style>
+      body{
+        background-color: #F5F5F5;
+      }
+
+      /* blog_info bottom background */
+      #scheme-Paradox .material-layout .something-else .mdl-card__supporting-text{
+        background-color: #fff;
+      }
+    </style>
+
+
+
+
+<!-- Fade Effect -->
+
+    <style>
+      .fade {
+        transition: all 800ms linear;
+        -webkit-transform: translate3d(0,0,0);
+        -moz-transform: translate3d(0,0,0);
+        -ms-transform: translate3d(0,0,0);
+        -o-transform: translate3d(0,0,0);
+        transform: translate3d(0,0,0);
+        opacity: 1;
+      }
+
+      .fade.out{
+        opacity: 0;
+      }
+    </style>
+
+
+<!-- Import Font -->
+<!-- Import Roboto -->
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
+
+
+<!-- Import Material Icons -->
+
+
+    <style id="material_icons"></style><script>if(typeof window.lsLoadCSSMaxNums === "undefined")window.lsLoadCSSMaxNums = 0;window.lsLoadCSSMaxNums++;lsloader.load("material_icons","/css/material-icons.css?pqhB/Rd/ab0H2+kZp0RDmw==",function(){if(typeof window.lsLoadCSSNums === "undefined")window.lsLoadCSSNums = 0;window.lsLoadCSSNums++;if(window.lsLoadCSSNums == window.lsLoadCSSMaxNums)document.documentElement.style.display="";}, false)</script>
+
+
+
+
+    <!-- Import jQuery -->
+    
+        <script>lsloader.load("jq_js","/js/jquery.min.js?qcusAULNeBksqffqUM2+Ig==", true)</script>
+    
+
+    <!-- WebAPP Icons -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="SCHHX">
+    <meta name="msapplication-starturl" content="https://schhx.github.io/2018/09/23/MySQL之索引/">
+    <meta name="msapplication-navbutton-color" content="#0097A7">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="SCHHX">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon" href="/img/favicon.png">
+
+    <!-- Site Verification -->
+    
+    
+
+    <!-- RSS -->
+    
+
+    <!-- The Open Graph protocol -->
+    <meta property="og:url" content="https://schhx.github.io/2018/09/23/MySQL之索引/">
+    <meta property="og:type" content="blog">
+    <meta property="og:title" content="MySQL之索引 | SCHHX">
+    <meta property="og:image" content="/img/favicon.png">
+    <meta property="og:description" content="索引是存储引擎快速找到记录的一种数据结构，索引对于良好的性能非常关键，尤其是当表中的数据越来越大时。">
+    <meta property="og:article:tag" content="MySQL"> 
+
+    
+        <meta property="article:published_time" content="Sun Sep 23 2018 22:43:49 GMT+0800">
+        <meta property="article:modified_time" content="Tue Nov 26 2019 11:41:44 GMT+0800">
+    
+
+    <!-- The Twitter Card protocol -->
+    <meta name="twitter:card" content="summary_large_image">
+
+    <!-- Add canonical link for SEO -->
+    
+        <link rel="canonical" href="https://schhx.github.io/2018/09/23/MySQL之索引/index.html">
+    
+
+    <!-- Structured-data for SEO -->
+    
+        
+
+
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "mainEntityOfPage": "https://schhx.github.io/2018/09/23/MySQL之索引/index.html",
+    "headline": "MySQL之索引",
+    "datePublished": "Sun Sep 23 2018 22:43:49 GMT+0800",
+    "dateModified": "Tue Nov 26 2019 11:41:44 GMT+0800",
+    "author": {
+        "@type": "Person",
+        "name": "SCHHX",
+        "image": {
+            "@type": "ImageObject",
+            "url": "/img/avatar.png"
+        },
+        "description": "Know Yourself"
+    },
+    "publisher": {
+        "@type": "Organization",
+        "name": "SCHHX",
+        "logo": {
+            "@type":"ImageObject",
+            "url": "/img/favicon.png"
+        }
+    },
+    "keywords": ",MySQL",
+    "description": "索引是存储引擎快速找到记录的一种数据结构，索引对于良好的性能非常关键，尤其是当表中的数据越来越大时。",
+}
+</script>
+
+
+    
+
+    <!-- Analytics -->
+    
+    
+    
+
+    <!-- Custom Head -->
+    
+
+</head>
+
+
+    
+        <body id="scheme-Paradox" class="lazy">
+            <div class="material-layout  mdl-js-layout has-drawer is-upgraded">
+                
+
+                <!-- Main Container -->
+                <main class="material-layout__content" id="main">
+
+                    <!-- Top Anchor -->
+                    <div id="top"></div>
+
+                    
+                        <!-- Hamburger Button -->
+                        <button class="MD-burger-icon sidebar-toggle">
+                            <span class="MD-burger-layer"></span>
+                        </button>
+                    
+
+                    <!-- Post TOC -->
+
+    
+    <!-- Back Button -->
+    <!--
+    <div class="material-back" id="backhome-div" tabindex="0">
+        <a class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon"
+           href="#" onclick="window.history.back();return false;"
+           target="_self"
+           role="button"
+           data-upgraded=",MaterialButton,MaterialRipple">
+            <i class="material-icons" role="presentation">arrow_back</i>
+            <span class="mdl-button__ripple-container">
+                <span class="mdl-ripple"></span>
+            </span>
+        </a>
+    </div>
+    -->
+
+
+    <!-- Left aligned menu below button -->
+    
+    
+    <button id="post-toc-trigger-btn"
+        class="mdl-button mdl-js-button mdl-button--icon">
+        <i class="material-icons">format_list_numbered</i>
+    </button>
+
+    <ul class="post-toc-wrap mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect" for="post-toc-trigger-btn" style="max-height:80vh; overflow-y:scroll;">
+        <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#索引类型"><span class="post-toc-number">1.</span> <span class="post-toc-text">索引类型</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#B-Tree-索引"><span class="post-toc-number">1.1.</span> <span class="post-toc-text">B-Tree 索引</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#哈希索引"><span class="post-toc-number">1.2.</span> <span class="post-toc-text">哈希索引</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#全文索引"><span class="post-toc-number">1.3.</span> <span class="post-toc-text">全文索引</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#创建索引"><span class="post-toc-number">2.</span> <span class="post-toc-text">创建索引</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#主键索引"><span class="post-toc-number">2.1.</span> <span class="post-toc-text">主键索引</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#唯一索引"><span class="post-toc-number">2.2.</span> <span class="post-toc-text">唯一索引</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#普通索引"><span class="post-toc-number">2.3.</span> <span class="post-toc-text">普通索引</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#全文索引-1"><span class="post-toc-number">2.4.</span> <span class="post-toc-text">全文索引</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#组合索引"><span class="post-toc-number">2.5.</span> <span class="post-toc-text">组合索引</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#使用索引"><span class="post-toc-number">3.</span> <span class="post-toc-text">使用索引</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#索引有效的查询"><span class="post-toc-number">3.1.</span> <span class="post-toc-text">索引有效的查询</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#全值匹配"><span class="post-toc-number">3.1.1.</span> <span class="post-toc-text">全值匹配</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#匹配最左前缀"><span class="post-toc-number">3.1.2.</span> <span class="post-toc-text">匹配最左前缀</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#匹配列前缀"><span class="post-toc-number">3.1.3.</span> <span class="post-toc-text">匹配列前缀</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#匹配范围值"><span class="post-toc-number">3.1.4.</span> <span class="post-toc-text">匹配范围值</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#精确匹配某一列并范围匹配另一列"><span class="post-toc-number">3.1.5.</span> <span class="post-toc-text">精确匹配某一列并范围匹配另一列</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#索引无效的查询"><span class="post-toc-number">3.2.</span> <span class="post-toc-text">索引无效的查询</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#不使用最左列"><span class="post-toc-number">3.2.1.</span> <span class="post-toc-text">不使用最左列</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#使用列后缀"><span class="post-toc-number">3.2.2.</span> <span class="post-toc-text">使用列后缀</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#跳过索引中的列"><span class="post-toc-number">3.2.3.</span> <span class="post-toc-text">跳过索引中的列</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#范围查询右边的列无法使用索引"><span class="post-toc-number">3.2.4.</span> <span class="post-toc-text">范围查询右边的列无法使用索引</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#不独立的列"><span class="post-toc-number">3.2.5.</span> <span class="post-toc-text">不独立的列</span></a></li></ol></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#高效索引的策略"><span class="post-toc-number">4.</span> <span class="post-toc-text">高效索引的策略</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#前缀索引"><span class="post-toc-number">4.1.</span> <span class="post-toc-text">前缀索引</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#前缀索引的选择性"><span class="post-toc-number">4.1.1.</span> <span class="post-toc-text">前缀索引的选择性</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#前缀索引的创建"><span class="post-toc-number">4.1.2.</span> <span class="post-toc-text">前缀索引的创建</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#使用前缀索引的注意点"><span class="post-toc-number">4.1.3.</span> <span class="post-toc-text">使用前缀索引的注意点</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#选择合适的索引列顺序"><span class="post-toc-number">4.2.</span> <span class="post-toc-text">选择合适的索引列顺序</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#聚簇索引与非聚簇索引"><span class="post-toc-number">4.3.</span> <span class="post-toc-text">聚簇索引与非聚簇索引</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#聚簇索引"><span class="post-toc-number">4.3.1.</span> <span class="post-toc-text">聚簇索引</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#非聚簇索引（二级索引）"><span class="post-toc-number">4.3.2.</span> <span class="post-toc-text">非聚簇索引（二级索引）</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#覆盖索引"><span class="post-toc-number">4.4.</span> <span class="post-toc-text">覆盖索引</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#使用索引来排序"><span class="post-toc-number">4.5.</span> <span class="post-toc-text">使用索引来排序</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#避免使用唯一索引"><span class="post-toc-number">4.6.</span> <span class="post-toc-text">避免使用唯一索引</span></a></li></ol></li></ol>
+    </ul>
+    
+
+
+
+
+<!-- Layouts -->
+
+    <!-- Post Module -->
+    <div class="material-post_container">
+
+        <div class="material-post mdl-grid">
+            <div class="mdl-card mdl-shadow--4dp mdl-cell mdl-cell--12-col">
+
+                <!-- Post Header(Thumbnail & Title) -->
+                
+    <!-- Paradox Post Header -->
+    
+        
+            <!-- Random Thumbnail -->
+            <div class="post_thumbnail-random mdl-card__media mdl-color-text--grey-50">
+            <script type="text/ls-javascript" id="post-thumbnail-script">
+    var randomNum = Math.floor(Math.random() * 19 + 1);
+
+    $('.post_thumbnail-random').attr('data-original', '/img/random/material-' + randomNum + '.png');
+    $('.post_thumbnail-random').addClass('lazy');
+</script>
+
+        
+    
+            <p class="article-headline-p">
+                MySQL之索引
+            </p>
+        </div>
+
+
+
+
+
+                
+                    <!-- Paradox Post Info -->
+                    <div class="mdl-color-text--grey-700 mdl-card__supporting-text meta">
+
+    <!-- Author Avatar -->
+    <div id="author-avatar">
+        <img src="/img/avatar.png" width="44px" height="44px" alt="Author Avatar"/>
+    </div>
+    <!-- Author Name & Date -->
+    <div>
+        <strong>SCHHX</strong>
+        <span>9月 23, 2018</span>
+    </div>
+
+    <div class="section-spacer"></div>
+
+    <!-- Favorite -->
+    <!--
+        <button id="article-functions-like-button" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon btn-like">
+            <i class="material-icons" role="presentation">favorite</i>
+            <span class="visuallyhidden">favorites</span>
+        </button>
+    -->
+
+    <!-- Qrcode -->
+    
+
+    <!-- Tags (bookmark) -->
+    
+    <button id="article-functions-viewtags-button" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon">
+        <i class="material-icons" role="presentation">bookmark</i>
+        <span class="visuallyhidden">bookmark</span>
+    </button>
+    <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="article-functions-viewtags-button">
+        <li class="mdl-menu__item">
+        <a class="post_tag-link" href="/tags/MySQL/">MySQL</a>
+    </ul>
+    
+
+    <!-- Share -->
+    
+        <button id="article-fuctions-share-button" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon">
+    <i class="material-icons" role="presentation">share</i>
+    <span class="visuallyhidden">share</span>
+</button>
+<ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="article-fuctions-share-button">
+    
+
+    
+
+    <!-- Share Weibo -->
+    
+        <a class="post_share-link" href="http://service.weibo.com/share/share.php?appkey=&title=MySQL之索引&url=https://schhx.github.io/2018/09/23/MySQL之索引/index.html&pic=https://schhx.github.io/img/favicon.png&searchPic=false&style=simple" target="_blank">
+            <li class="mdl-menu__item">
+                分享到微博
+            </li>
+        </a>
+    
+
+    <!-- Share Twitter -->
+    
+        <a class="post_share-link" href="https://twitter.com/intent/tweet?text=MySQL之索引&url=https://schhx.github.io/2018/09/23/MySQL之索引/index.html&via=SCHHX" target="_blank">
+            <li class="mdl-menu__item">
+                分享到 Twitter
+            </li>
+        </a>
+    
+
+    <!-- Share Facebook -->
+    
+        <a class="post_share-link" href="https://www.facebook.com/sharer/sharer.php?u=https://schhx.github.io/2018/09/23/MySQL之索引/index.html" target="_blank">
+            <li class="mdl-menu__item">
+                分享到 Facebook
+            </li>
+        </a>
+    
+
+    <!-- Share Google+ -->
+    
+        <a class="post_share-link" href="https://plus.google.com/share?url=https://schhx.github.io/2018/09/23/MySQL之索引/index.html" target="_blank">
+            <li class="mdl-menu__item">
+                分享到 Google+
+            </li>
+        </a>
+    
+
+    <!-- Share LinkedIn -->
+    
+
+    <!-- Share QQ -->
+    
+
+    <!-- Share Telegram -->
+    
+</ul>
+
+    
+</div>
+
+                
+
+                <!-- Post Content -->
+                <div id="post-content" class="mdl-color-text--grey-700 mdl-card__supporting-text fade out">
+    
+        <p>索引是存储引擎快速找到记录的一种数据结构，索引对于良好的性能非常关键，尤其是当表中的数据越来越大时。<a id="more"></a>索引优化应该是对查询性能优化最有效的手段，创建一个最优的索引有时会将查询性能提高几个数量级。</p>
+<h2 id="索引类型"><a href="#索引类型" class="headerlink" title="索引类型"></a>索引类型</h2><p>索引有很多类型，可以为不同的场景提供更好的性能，在MySQL中索引在存储引擎层而不是服务器层实现，所以并没有统一的索引标准，每个引擎实现的索引类型不完全相同，同样的索引实现方式也有可能不同。</p>
+<h3 id="B-Tree-索引"><a href="#B-Tree-索引" class="headerlink" title="B-Tree 索引"></a>B-Tree 索引</h3><p>当说到索引时，如果没有特别指明，那么通常是指 B-Tree 索引，它是最常用的索引类型，使用 B-Tree 结构（实际上很多引擎使用的 B+Tree 结构）来存储数据，大多数引擎都支持这种索引。</p>
+<p>B-Tree 索引通常意味着所有的值都是按顺序存储的，并且每个叶子页到根的距离相同。B-Tree 索引都够加快访问数据的速度，因为存储引擎不再需要进行全表扫描来获取需要的数据，而是从索引的根节点开始进行搜索。</p>
+<h3 id="哈希索引"><a href="#哈希索引" class="headerlink" title="哈希索引"></a>哈希索引</h3><p>哈希索引基于哈希表实现，只有精确匹配索引所有列的查询才有效，对于每行数据，存储引擎会对所有的索引列计算一个哈希码，哈希索引将所有的哈希码存储在索引中，同时在哈希表中保存指向每个数据行的指针。</p>
+<p>在MySQL中，只有 Memory 引擎显示支持哈希索引，但是其他引擎可以在程序层面上模拟哈希索引，比如在数据库表多加一列存储哈希码，哈希码的由应用程序计算，然后在哈希码列加 B-Tree 索引。</p>
+<h3 id="全文索引"><a href="#全文索引" class="headerlink" title="全文索引"></a>全文索引</h3><p>全文索引是一种特殊类型的索引，它查找的是文本中的关键词，而不是直接比较索引中的值。全文索引更类似搜索引擎做的事情，适用于match against操作，而不是普通的where条件操作。</p>
+<hr>
+<p><strong>注意：以下内容主要针对的是 InnoDB 存储引擎的 B+Tree 索引数据结构</strong></p>
+<h2 id="创建索引"><a href="#创建索引" class="headerlink" title="创建索引"></a>创建索引</h2><h3 id="主键索引"><a href="#主键索引" class="headerlink" title="主键索引"></a>主键索引</h3><pre><code>ALTER TABLE&#39;table_name&#39; ADD PRIMARY KEY&#39;index_name&#39; (&#39;column&#39;);
+</code></pre><h3 id="唯一索引"><a href="#唯一索引" class="headerlink" title="唯一索引"></a>唯一索引</h3><pre><code>ALTER TABLE&#39;table_name&#39; ADD UNIQUE &#39;index_name&#39; (&#39;column&#39;);
+</code></pre><h3 id="普通索引"><a href="#普通索引" class="headerlink" title="普通索引"></a>普通索引</h3><pre><code>ALTER TABLE&#39;table_name&#39; ADD INDEX&#39;index_name&#39; (&#39;column&#39;);
+</code></pre><h3 id="全文索引-1"><a href="#全文索引-1" class="headerlink" title="全文索引"></a>全文索引</h3><pre><code>ALTER TABLE &#39;table_name&#39; ADD FULLTEXT &#39;index_name&#39; (&#39;column&#39;);
+</code></pre><h3 id="组合索引"><a href="#组合索引" class="headerlink" title="组合索引"></a>组合索引</h3><pre><code>ALTER TABLE &#39;table_name&#39; ADD INDEX &#39;index_name&#39; (&#39;column1&#39;, &#39;column2&#39;, ...);
+</code></pre><h2 id="使用索引"><a href="#使用索引" class="headerlink" title="使用索引"></a>使用索引</h2><p>创建一个测试的用户表</p>
+<pre><code>DROP TABLE IF EXISTS user_test;
+CREATE TABLE user_test(    
+  id int AUTO_INCREMENT PRIMARY KEY,
+  user_name varchar(30) NOT NULL,
+  sex bit(1) NOT NULL DEFAULT b&#39;1&#39;,
+  city varchar(50) NOT NULL,
+  age int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+</code></pre><p>创建一个组合索引：</p>
+<pre><code>ALTER TABLE user_test ADD INDEX idx_user(user_name , city , age);
+</code></pre><h3 id="索引有效的查询"><a href="#索引有效的查询" class="headerlink" title="索引有效的查询"></a>索引有效的查询</h3><h4 id="全值匹配"><a href="#全值匹配" class="headerlink" title="全值匹配"></a>全值匹配</h4><p>全值匹配指的是和索引中的所有列进行匹配，注意全值匹配与where后查询条件的顺序无关。</p>
+<pre><code>SELECT * FROM user_test WHERE user_name = &#39;feinik&#39; AND age = 26 AND city = &#39;广州&#39;;
+</code></pre><h4 id="匹配最左前缀"><a href="#匹配最左前缀" class="headerlink" title="匹配最左前缀"></a>匹配最左前缀</h4><p>匹配最左前缀是指优先匹配最左索引列，如：上面创建的索引可用于查询条件为：（user_name ）、（user_name, city）、（user_name , city , age），满足最左前缀查询条件的顺序与索引列的顺序无关，如：（city, user_name）、（age, city, user_name）。</p>
+<h4 id="匹配列前缀"><a href="#匹配列前缀" class="headerlink" title="匹配列前缀"></a>匹配列前缀</h4><p>指匹配列值的开头部分，如：查询用户名以feinik开头的所有用户。</p>
+<pre><code>SELECT * FROM user_test WHERE user_name LIKE &#39;feinik%&#39;;
+</code></pre><h4 id="匹配范围值"><a href="#匹配范围值" class="headerlink" title="匹配范围值"></a>匹配范围值</h4><p>如：查询用户名以feinik开头的所有用户，这里使用了索引的第一列</p>
+<pre><code>SELECT * FROM user_test WHERE user_name LIKE &#39;feinik%&#39;;
+</code></pre><h4 id="精确匹配某一列并范围匹配另一列"><a href="#精确匹配某一列并范围匹配另一列" class="headerlink" title="精确匹配某一列并范围匹配另一列"></a>精确匹配某一列并范围匹配另一列</h4><pre><code>SELECT * FROM user_test WHERE user_name = &#39;feinik&#39; AND city = &#39;广%&#39;;
+</code></pre><h3 id="索引无效的查询"><a href="#索引无效的查询" class="headerlink" title="索引无效的查询"></a>索引无效的查询</h3><h4 id="不使用最左列"><a href="#不使用最左列" class="headerlink" title="不使用最左列"></a>不使用最左列</h4><p>where查询条件中不包含索引列中的最左索引列，则无法使用到索引查询，如：</p>
+<pre><code>SELECT * FROM user_test WHERE city = &#39;广州&#39;;
+</code></pre><p>或</p>
+<pre><code>SELECT * FROM user_test WHERE age= 26;
+</code></pre><p>或</p>
+<pre><code>SELECT * FROM user_test WHERE city =&#39;广州&#39; AND age = &#39;26&#39;;
+</code></pre><h4 id="使用列后缀"><a href="#使用列后缀" class="headerlink" title="使用列后缀"></a>使用列后缀</h4><p>即使where的查询条件是最左索引列，也无法使用索引查询用户名以feinik结尾的用户。</p>
+<pre><code>SELECT * FROM user_test WHERE user_name like &#39;%feinik&#39;;
+</code></pre><h4 id="跳过索引中的列"><a href="#跳过索引中的列" class="headerlink" title="跳过索引中的列"></a>跳过索引中的列</h4><p>下面的例子中跳过了 city，所以只能使用索引的第一列 user_name。</p>
+<pre><code>SELECT * FROM user_test WHERE user_name = &#39;feinik&#39; AND age = 26;
+</code></pre><h4 id="范围查询右边的列无法使用索引"><a href="#范围查询右边的列无法使用索引" class="headerlink" title="范围查询右边的列无法使用索引"></a>范围查询右边的列无法使用索引</h4><p>如果where查询条件中有某个列的范围查询，则其右边的所有列都无法使用索引优化查询，比如下面的例子中，age 无法使用索引：</p>
+<pre><code>SELECT * FROM user_test WHERE user_name =&#39;feinik&#39; AND city LIKE&#39;广州%&#39; AND age = 26;
+</code></pre><h4 id="不独立的列"><a href="#不独立的列" class="headerlink" title="不独立的列"></a>不独立的列</h4><p>索引列不能是表达式的一部分，也不能作为函数的参数，否则无法使用索引查询。</p>
+<pre><code>SELECT * FROM user_test WHERE user_name = concat(user_name, &#39;fei&#39;);
+</code></pre><h2 id="高效索引的策略"><a href="#高效索引的策略" class="headerlink" title="高效索引的策略"></a>高效索引的策略</h2><h3 id="前缀索引"><a href="#前缀索引" class="headerlink" title="前缀索引"></a>前缀索引</h3><p>有时候需要索引很长的字符列，这会增加索引的存储空间以及降低索引的效率，一种策略是可以使用哈希索引，还有一种就是可以使用前缀索引，前缀索引是选择字符列的前n个字符作为索引，这样可以大大节约索引空间，从而提高索引效率。</p>
+<h4 id="前缀索引的选择性"><a href="#前缀索引的选择性" class="headerlink" title="前缀索引的选择性"></a>前缀索引的选择性</h4><p>前缀索引要选择足够长的前缀以保证高的选择性，同时又不能太长，我们可以通过以下方式来计算出合适的前缀索引的选择长度值：</p>
+<p>第一步，计算原始选择性，index_column代表要添加前缀索引的列</p>
+<pre><code>SELECT COUNT(DISTINCT index_column)/COUNT(*) FROM table_name;
+</code></pre><p>第二步，计算不同前缀的选择性</p>
+<pre><code>SELECT
+  COUNT(DISTINCT LEFT(index_column,1))/COUNT(*) AS sel1,
+  COUNT(DISTINCT LEFT(index_column,2))/COUNT(*) AS sel2,
+  COUNT(DISTINCT LEFT(index_column,3))/COUNT(*) AS sel3,
+  ...
+FROM table_name;
+</code></pre><p>通过以上语句逐步找到最接近于第一步中的前缀索引的选择性比值，那么就可以使用对应的字符截取长度来做前缀索引了。</p>
+<h4 id="前缀索引的创建"><a href="#前缀索引的创建" class="headerlink" title="前缀索引的创建"></a>前缀索引的创建</h4><pre><code>ALTER TABLE table_name ADD INDEX index_name (index_column(length));
+</code></pre><h4 id="使用前缀索引的注意点"><a href="#使用前缀索引的注意点" class="headerlink" title="使用前缀索引的注意点"></a>使用前缀索引的注意点</h4><p>前缀索引是一种能使索引更小，更快的有效办法，但是MySql无法使用前缀索引做ORDER BY 和 GROUP BY以及使用前缀索引做覆盖扫描。</p>
+<h3 id="选择合适的索引列顺序"><a href="#选择合适的索引列顺序" class="headerlink" title="选择合适的索引列顺序"></a>选择合适的索引列顺序</h3><p>在组合索引的创建中索引列的顺序非常重要，正确的索引顺序依赖于使用该索引的查询方式.</p>
+<p>对于组合索引的索引顺序可以通过经验法则来帮助我们完成：将选择性最高的列放到索引最前列，该法则与前缀索引的选择性方法一致，但并不是说所有的组合索引的顺序都使用该法则就能确定，还需要根据具体的查询场景来确定具体的索引顺序。</p>
+<h3 id="聚簇索引与非聚簇索引"><a href="#聚簇索引与非聚簇索引" class="headerlink" title="聚簇索引与非聚簇索引"></a>聚簇索引与非聚簇索引</h3><h4 id="聚簇索引"><a href="#聚簇索引" class="headerlink" title="聚簇索引"></a>聚簇索引</h4><p>聚簇索引决定数据在物理磁盘上的物理排序，一个表只能有一个聚簇索引，如果定义了主键，那么 InnoDB 会通过主键来聚簇数据，如果没有定义主键，InnoDB 会选择一个唯一的非空索引代替，如果没有唯一的非空索引，InnoDB 会隐式定义一个主键来作为聚簇索引。</p>
+<p>聚簇索引可以很大程度的提高访问速度，因为聚簇索引将索引和行数据保存在了同一个 B-Tree 中，所以找到了索引也就相应的找到了对应的行数据，但在使用聚簇索引的时候需注意避免随机的聚簇索引（一般指主键值不连续，且分布范围不均匀）。</p>
+<p>如使用 UUID 来作为聚簇索引性能会很差，因为 UUID 值的不连续会导致增加很多的索引碎片和随机I/O，最终导致查询的性能急剧下降。</p>
+<h4 id="非聚簇索引（二级索引）"><a href="#非聚簇索引（二级索引）" class="headerlink" title="非聚簇索引（二级索引）"></a>非聚簇索引（二级索引）</h4><p>与聚簇索引不同的是非聚簇索引并不决定数据在磁盘上的物理排序，非聚簇索引只是索引主键列，所以如果主键很大的话，非聚簇索引也会很大。另外非聚簇索引需要两次索引查找，而不是一次。</p>
+<p>比如，在上面的例子中 id 是主键，是聚簇索引，（user_name，city, age）上建立的索引就是非聚簇索引，那么在InnoDB里实际上包含2个索引(即2个B+树)：。</p>
+<pre><code>id -&gt; (user_name, sex, city, age); // 主索引，每个InnoDB的表必然包含一个主索引，主索引必然包含所有的列
+
+(user_name，city, age) -&gt; id; // 非聚簇索引只是索引主键列
+</code></pre><p>如果你只查询主键的话，只要查(user_name，city, age)索引就可以了，不会再查主索引的：</p>
+<pre><code>SELECT id FROM user_test WHERE user_name = ? AND city = ? AND age = ?;
+</code></pre><p>但如果你还要查询其他字段，就要先查(user_name，city, age)索引查到id后，再会查主索引查到sex，所以会比刚才多查一次：</p>
+<pre><code>SELECT id, sex FROM user_test WHERE user_name = ? AND city = ? AND age = ?;
+</code></pre><h3 id="覆盖索引"><a href="#覆盖索引" class="headerlink" title="覆盖索引"></a>覆盖索引</h3><p>如果一个索引（如：组合索引）中包含所有要查询的字段的值，那么就称之为覆盖索引，如：</p>
+<pre><code>SELECT user_name, city, age FROM user_test WHERE user_name =&#39;feinik&#39; AND age &gt; 25;
+</code></pre><p>因为要查询的字段（user_name, city, age）都包含在组合索引的索引列中，所以就使用了覆盖索引查询，查看是否使用了覆盖索引可以通过执行计划中的Extra中的值为Using index则证明使用了覆盖索引，覆盖索引可以极大的提高访问性能。</p>
+<h3 id="使用索引来排序"><a href="#使用索引来排序" class="headerlink" title="使用索引来排序"></a>使用索引来排序</h3><p>在排序操作中如果能使用到索引来排序，那么可以极大的提高排序的速度，要使用索引来排序需要满足以下两点即可:</p>
+<ul>
+<li>ORDER BY 子句后的列顺序要与组合索引的列顺序一致，且所有排序列的排序方向（正序/倒序）需一致；</li>
+<li>所查询的字段值需要包含在索引列中，及满足覆盖索引。</li>
+</ul>
+<h3 id="避免使用唯一索引"><a href="#避免使用唯一索引" class="headerlink" title="避免使用唯一索引"></a>避免使用唯一索引</h3><p>普通索引和唯一索引相比</p>
+<ul>
+<li>查询性能上几乎没有差别</li>
+<li>更新性能上普通索引会更好</li>
+</ul>
+<p>所以如果能在应用层保证唯一，尽量使用普通索引。</p>
+
+        
+                <blockquote style="margin: 2em 0 0;padding: 0.5em 1em;border-left: 3px solid #F44336;background-color: #F5F5F5;list-style: none;">
+                    <p><strong>
+                         
+                            本作品采用<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">知识共享署名 4.0 国际许可协议</a>进行许可，转载请注明原文链接
+                        </strong>
+                        <br>
+                        <strong>本文链接：</strong><a href="https://schhx.github.io/2018/09/23/MySQL之索引/">https://schhx.github.io/2018/09/23/MySQL之索引/</a>
+                    </p>
+                </blockquote>
+        
+    
+
+    
+</div>
+
+
+                
+
+                <!-- Post Comments -->
+                
+                    
+                
+            </div>
+
+            <!-- Post Prev & Next Nav -->
+            <nav class="material-nav mdl-color-text--grey-50 mdl-cell mdl-cell--12-col">
+    <!-- Prev Nav -->
+    
+        <a href="/2018/10/08/MySQL之事务隔离级别/" id="post_nav-newer" class="prev-content">
+            <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900" role="presentation">
+                <i class="material-icons">arrow_back</i>
+            </button>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            新篇
+        </a>
+    
+
+    <!-- Section Spacer -->
+    <div class="section-spacer"></div>
+
+    <!-- Next Nav -->
+    
+        <a href="/2018/09/22/MySQL之存储引擎/" id="post_nav-older" class="next-content">
+            旧篇
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900" role="presentation">
+                <i class="material-icons">arrow_forward</i>
+            </button>
+        </a>
+    
+</nav>
+
+        </div>
+    </div>
+
+
+
+                    
+                        <!-- Overlay For Active Sidebar -->
+<div class="sidebar-overlay"></div>
+
+<!-- Material sidebar -->
+<aside id="sidebar" class="sidebar sidebar-colored sidebar-fixed-left" role="navigation">
+    <div id="sidebar-main">
+        <!-- Sidebar Header -->
+        <div class="sidebar-header header-cover" style="background-image: url(/img/sidebar_header.png);">
+    <!-- Top bar -->
+    <div class="top-bar"></div>
+
+    <!-- Sidebar toggle button -->
+    <button type="button" class="sidebar-toggle mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" style="display: initial;" data-upgraded=",MaterialButton,MaterialRipple">
+        <i class="material-icons">clear_all</i>
+        <span class="mdl-button__ripple-container">
+            <span class="mdl-ripple">
+            </span>
+        </span>
+    </button>
+
+    <!-- Sidebar Avatar -->
+    <div class="sidebar-image">
+        <img src="/img/avatar.png" alt="SCHHX's avatar">
+    </div>
+
+    <!-- Sidebar Email -->
+    <a data-toggle="dropdown" class="sidebar-brand" href="#settings-dropdown">
+        
+        <b class="caret"></b>
+    </a>
+</div>
+
+
+        <!-- Sidebar Navigation  -->
+        <ul class="nav sidebar-nav">
+    <!-- User dropdown  -->
+    <li class="dropdown">
+        <ul id="settings-dropdown" class="dropdown-menu">
+            
+                <li>
+                    <a href="#" target="_blank" title="Email Me">
+                        
+                            <i class="material-icons sidebar-material-icons sidebar-indent-left1pc-element">email</i>
+                        
+                        Email Me
+                    </a>
+                </li>
+            
+        </ul>
+    </li>
+
+    <!-- Homepage -->
+    
+        <li id="sidebar-first-li">
+            <a href="/">
+                
+                    <i class="material-icons sidebar-material-icons">home</i>
+                
+                主页
+            </a>
+        </li>
+        
+    
+
+    <!-- Archives  -->
+    
+        <li class="dropdown">
+            <a href="#" class="ripple-effect dropdown-toggle" data-toggle="dropdown">
+                
+                    <i class="material-icons sidebar-material-icons">inbox</i>
+                
+                    归档
+                <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+            <li>
+                <a class="sidebar_archives-link" href="/archives/2020/06/">六月 2020<span class="sidebar_archives-count">3</span></a></li><li><a class="sidebar_archives-link" href="/archives/2020/05/">五月 2020<span class="sidebar_archives-count">1</span></a></li><li><a class="sidebar_archives-link" href="/archives/2020/04/">四月 2020<span class="sidebar_archives-count">8</span></a></li><li><a class="sidebar_archives-link" href="/archives/2019/12/">十二月 2019<span class="sidebar_archives-count">1</span></a></li><li><a class="sidebar_archives-link" href="/archives/2019/06/">六月 2019<span class="sidebar_archives-count">2</span></a></li><li><a class="sidebar_archives-link" href="/archives/2019/04/">四月 2019<span class="sidebar_archives-count">9</span></a></li><li><a class="sidebar_archives-link" href="/archives/2019/03/">三月 2019<span class="sidebar_archives-count">14</span></a></li><li><a class="sidebar_archives-link" href="/archives/2018/11/">十一月 2018<span class="sidebar_archives-count">2</span></a></li><li><a class="sidebar_archives-link" href="/archives/2018/10/">十月 2018<span class="sidebar_archives-count">3</span></a></li><li><a class="sidebar_archives-link" href="/archives/2018/09/">九月 2018<span class="sidebar_archives-count">5</span></a></li><li><a class="sidebar_archives-link" href="/archives/2018/08/">八月 2018<span class="sidebar_archives-count">4</span></a></li><li><a class="sidebar_archives-link" href="/archives/2018/07/">七月 2018<span class="sidebar_archives-count">4</span></a></li><li><a class="sidebar_archives-link" href="/archives/2018/06/">六月 2018<span class="sidebar_archives-count">5</span></a>
+            </ul>
+        </li>
+        
+    
+
+    <!-- Categories  -->
+    
+        <li class="dropdown">
+            <a href="#" class="ripple-effect dropdown-toggle" data-toggle="dropdown">
+                
+                    <i class="material-icons sidebar-material-icons">chrome_reader_mode</i>
+                
+                分类
+                <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+                <li>
+                <a class="sidebar_archives-link" href="/categories/IO/">IO<span class="sidebar_archives-count">1</span></a></li><li><a class="sidebar_archives-link" href="/categories/JVM/">JVM<span class="sidebar_archives-count">4</span></a></li><li><a class="sidebar_archives-link" href="/categories/Java/">Java<span class="sidebar_archives-count">3</span></a></li><li><a class="sidebar_archives-link" href="/categories/Java并发编程/">Java并发编程<span class="sidebar_archives-count">10</span></a></li><li><a class="sidebar_archives-link" href="/categories/Kafka/">Kafka<span class="sidebar_archives-count">4</span></a></li><li><a class="sidebar_archives-link" href="/categories/Linux/">Linux<span class="sidebar_archives-count">3</span></a></li><li><a class="sidebar_archives-link" href="/categories/MySQL/">MySQL<span class="sidebar_archives-count">5</span></a></li><li><a class="sidebar_archives-link" href="/categories/RabbitMQ/">RabbitMQ<span class="sidebar_archives-count">4</span></a></li><li><a class="sidebar_archives-link" href="/categories/Redis/">Redis<span class="sidebar_archives-count">10</span></a></li><li><a class="sidebar_archives-link" href="/categories/Spring/">Spring<span class="sidebar_archives-count">1</span></a></li><li><a class="sidebar_archives-link" href="/categories/SpringBoot入门教程/">SpringBoot入门教程<span class="sidebar_archives-count">6</span></a></li><li><a class="sidebar_archives-link" href="/categories/Spring学习笔记/">Spring学习笔记<span class="sidebar_archives-count">6</span></a></li><li><a class="sidebar_archives-link" href="/categories/源码/">源码<span class="sidebar_archives-count">2</span></a></li><li><a class="sidebar_archives-link" href="/categories/网络协议/">网络协议<span class="sidebar_archives-count">2</span></a></li><li><a class="sidebar_archives-link" href="/categories/随笔/">随笔<span class="sidebar_archives-count">2</span></a>
+            </ul>
+        </li>
+        
+    
+
+    <!-- Pages  -->
+    
+        <li>
+            <a href="/about" title="关于我">
+                
+                    <i class="material-icons sidebar-material-icons">person</i>
+                
+                关于我
+            </a>
+        </li>
+        
+    
+
+    <!-- Article Number  -->
+    
+        <li>
+            <a href="/archives">
+                文章总数
+                <span class="sidebar-badge">61</span>
+            </a>
+        </li>
+        
+    
+</ul>
+
+
+        <!-- Sidebar Footer -->
+        <!--
+I'm glad you use this theme, the development is no so easy, I hope you can keep the copyright, I will thank you so much.
+If you still want to delete the copyrights, could you still retain the first one? Which namely "Theme Material"
+It will not impact the appearance and can give developers a lot of support :)
+
+很高兴您使用并喜欢该主题，开发不易 十分谢谢与希望您可以保留一下版权声明。
+如果您仍然想删除的话 能否只保留第一项呢？即 "Theme Material"
+它不会影响美观并可以给开发者很大的支持和动力。 :)
+-->
+
+<!-- Sidebar Divider -->
+
+    <div class="sidebar-divider"></div>
+
+
+<!-- Theme Material -->
+
+    <a href="https://github.com/viosey/hexo-theme-material"  class="sidebar-footer-text-a" target="_blank">
+        <div class="sidebar-text mdl-button mdl-js-button mdl-js-ripple-effect sidebar-footer-text-div" data-upgraded=",MaterialButton,MaterialRipple">
+            主题 - Material
+            <span class="sidebar-badge badge-circle">i</span>
+        </div>
+    </a>
+
+
+<!-- Help & Support -->
+<!--
+
+-->
+
+<!-- Feedback -->
+<!--
+
+-->
+
+<!-- About Theme -->
+<!--
+
+-->
+
+    </div>
+
+    <!-- Sidebar Image -->
+    
+
+</aside>
+
+                    
+
+                    
+                        <!-- Footer Top Button -->
+                        <div id="back-to-top" class="toTop-wrap">
+    <a href="#top" class="toTop">
+        <i class="material-icons footer_top-i">expand_less</i>
+    </a>
+</div>
+
+                    
+
+                    <!--Footer-->
+<footer class="mdl-mini-footer" id="bottom">
+    
+        <!-- Paradox Footer Left Section -->
+        <div class="mdl-mini-footer--left-section sns-list">
+    <!-- Twitter -->
+    
+
+    <!-- Facebook -->
+    
+
+    <!-- Google + -->
+    
+        <a href="https://www.google.com/" target="_blank">
+            <button class="mdl-mini-footer--social-btn social-btn footer-sns-gplus">
+                <span class="visuallyhidden">Google Plus</span>
+            </button><!--
+     --></a>
+    
+
+    <!-- Weibo -->
+    
+
+    <!-- Instagram -->
+    
+
+    <!-- Tumblr -->
+    
+
+    <!-- Github -->
+    
+        <a href="https://github.com/schhx" target="_blank">
+            <button class="mdl-mini-footer--social-btn social-btn footer-sns-github">
+                <span class="visuallyhidden">Github</span>
+            </button><!--
+     --></a>
+    
+
+    <!-- LinkedIn -->
+    
+
+    <!-- Zhihu -->
+    
+
+    <!-- Bilibili -->
+    
+
+    <!-- Telegram -->
+    
+    
+    <!-- V2EX -->
+    
+</div>
+
+
+        <!--Copyright-->
+        <div id="copyright">
+            Copyright&nbsp;©<script type="text/javascript">var fd = new Date();document.write("&nbsp;" + fd.getFullYear() + "&nbsp;");</script>SCHHX
+            
+        </div>
+
+        <!-- Paradox Footer Right Section -->
+
+        <!--
+        I am glad you use this theme, the development is no so easy, I hope you can keep the copyright.
+        It will not impact the appearance and can give developers a lot of support :)
+
+        很高兴您使用该主题，开发不易，希望您可以保留一下版权声明。
+        它不会影响美观并可以给开发者很大的支持。 :)
+        -->
+
+        <div class="mdl-mini-footer--right-section">
+            <div>
+                <div class="footer-develop-div">Powered by <a href="https://hexo.io" target="_blank" class="footer-develop-a">Hexo</a></div>
+                <div class="footer-develop-div">Theme - <a href="https://github.com/viosey/hexo-theme-material" target="_blank" class="footer-develop-a">Material</a></div>
+            </div>
+        </div>
+    
+</footer>
+
+
+                    <!-- Import JS File -->
+
+    <script>lsloader.load("lazyload_js","/js/lazyload.min.js?1BcfzuNXqV+ntF6gq+5X3Q==", true)</script>
+
+
+
+    <script>lsloader.load("js_js","/js/js.min.js?V/53wGualMuiPM3xoetD5Q==", true)</script>
+
+
+
+    <script>lsloader.load("np_js","/js/nprogress.js?pl3Qhb9lvqR1FlyLUna1Yw==", true)</script>
+
+
+<script type="text/ls-javascript" id="NProgress-script">
+    NProgress.configure({
+        showSpinner: true
+    });
+    NProgress.start();
+    $('#nprogress .bar').css({
+        'background': '#29d'
+    });
+    $('#nprogress .peg').css({
+        'box-shadow': '0 0 10px #29d, 0 0 15px #29d'
+    });
+    $('#nprogress .spinner-icon').css({
+        'border-top-color': '#29d',
+        'border-left-color': '#29d'
+    });
+    setTimeout(function() {
+        NProgress.done();
+        $('.fade').removeClass('out');
+    }, 800);
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- UC Browser Compatible -->
+<script>
+	var agent = navigator.userAgent.toLowerCase();
+	if(agent.indexOf('ucbrowser')>0) {
+		document.write('<link rel="stylesheet" href="/css/uc.css">');
+	   alert('由于 UC 浏览器使用极旧的内核，而本网站使用了一些新的特性。\n为了您能更好的浏览，推荐使用 Chrome 或 Firefox 浏览器。');
+	}
+</script>
+
+<!-- Import prettify js  -->
+
+    
+        
+            <script>lsloader.load("prettify_js","/js/prettify.min.js?WN07fivHQSMKWy7BmHBB6w==", true)</script>
+        
+    
+
+
+
+<!-- Window Load -->
+<!-- add class for prettify -->
+<script type="text/ls-javascript" id="window-load">
+    $(window).on('load', function() {
+        // Post_Toc parent position fixed
+        $('.post-toc-wrap').parent('.mdl-menu__container').css('position', 'fixed');
+    });
+
+    
+        
+            $(function() {
+                $('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+                prettyPrint();
+                })
+        
+    
+    
+</script>
+
+<!-- MathJax Load-->
+
+
+<!-- Bing Background -->
+
+
+<script type="text/ls-javascript" id="lazy-load">
+    // Offer LazyLoad
+    queue.offer(function(){
+        $('.lazy').lazyload({
+            effect : 'show'
+        });
+    });
+
+    // Start Queue
+    $(document).ready(function(){
+        setInterval(function(){
+            queue.execNext();
+        },200);
+    });
+</script>
+
+<!-- Custom Footer -->
+
+
+
+<script>
+    (function(){
+        var scriptList = document.querySelectorAll('script[type="text/ls-javascript"]')
+
+        for (var i = 0; i < scriptList.length; ++i) {
+            var item = scriptList[i];
+            lsloader.runInlineScript(item.id,item.id);
+        }
+    })()
+console.log('\n %c © Material Theme | Version: 1.5.2 | https://github.com/viosey/hexo-theme-material %c \n', 'color:#455a64;background:#e0e0e0;padding:5px 0;border-top-left-radius:5px;border-bottom-left-radius:5px;', 'color:#455a64;background:#e0e0e0;padding:5px 0;border-top-right-radius:5px;border-bottom-right-radius:5px;');
+</script>
+
+                </main>
+            </div>
+        </body>
+    
+</html>

@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html style="display: none;" lang="zh">
+    <head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    <!--
+        © Material Theme
+        https://github.com/viosey/hexo-theme-material
+        Version: 1.5.2 -->
+    <script>
+        window.materialVersion = "1.5.2"
+        // Delete localstorage with these tags
+        window.oldVersion = [
+            'codestartv1',
+            '1.3.4',
+            '1.4.0',
+            '1.4.0b1',
+            '1.5.0'
+        ]
+    </script>
+
+    <!-- dns prefetch -->
+    <meta http-equiv="x-dns-prefetch-control" content="on">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <!-- Meta & Info -->
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <!-- Title -->
+    
+    <title>
+        
+            Redis基本数据结构之内部编码 | 
+        
+        SCHHX
+    </title>
+
+    <!-- Favicons -->
+    <link rel="icon shortcut" type="image/ico" href="/img/favicon.png">
+    <link rel="icon" href="/img/favicon.png">
+
+    <meta name="format-detection" content="telephone=no">
+    <meta name="description" itemprop="description" content="前面我们讲到了Redis有5种基本数据结构：string、hash、list、set、zset，但是这5种数据结构内部是怎么实现的呢？">
+    <meta name="keywords" content=",Redis">
+    <meta name="theme-color" content="#0097A7">
+
+    <!-- Disable Fucking Bloody Baidu Tranformation -->
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+
+    <!--[if lte IE 9]>
+        <link rel="stylesheet" href="/css/ie-blocker.css">
+
+        
+            <script src="/js/ie-blocker.zhCN.js"></script>
+        
+    <![endif]-->
+
+    <!-- Import lsloader -->
+    <script>(function(){window.lsloader={jsRunSequence:[],jsnamemap:{},cssnamemap:{}};lsloader.removeLS=function(a){try{localStorage.removeItem(a)}catch(b){}};lsloader.setLS=function(a,c){try{localStorage.setItem(a,c)}catch(b){}};lsloader.getLS=function(a){var c="";try{c=localStorage.getItem(a)}catch(b){c=""}return c};versionString="/*"+(window.materialVersion||"unknownVersion")+"*/";lsloader.clean=function(){try{var b=[];for(var a=0;a<localStorage.length;a++){b.push(localStorage.key(a))}b.forEach(function(e){var f=lsloader.getLS(e);if(window.oldVersion){var d=window.oldVersion.reduce(function(g,h){return g||f.indexOf("/*"+h+"*/")!==-1},false);if(d){lsloader.removeLS(e)}}})}catch(c){}};lsloader.clean();lsloader.load=function(f,a,b,d){if(typeof b==="boolean"){d=b;b=undefined}d=d||false;b=b||function(){};var e;e=this.getLS(f);if(e&&e.indexOf(versionString)===-1){this.removeLS(f);this.requestResource(f,a,b,d);return}if(e){var c=e.split(versionString)[0];if(c!=a){console.log("reload:"+a);this.removeLS(f);this.requestResource(f,a,b,d);return}e=e.split(versionString)[1];if(d){this.jsRunSequence.push({name:f,code:e});this.runjs(a,f,e)}else{document.getElementById(f).appendChild(document.createTextNode(e));b()}}else{this.requestResource(f,a,b,d)}};lsloader.requestResource=function(b,e,a,c){var d=this;if(c){this.iojs(e,b,function(h,f,g){d.setLS(f,h+versionString+g);d.runjs(h,f,g)})}else{this.iocss(e,b,function(f){document.getElementById(b).appendChild(document.createTextNode(f));d.setLS(b,e+versionString+f)},a)}};lsloader.iojs=function(d,b,g){var a=this;a.jsRunSequence.push({name:b,code:""});try{var f=new XMLHttpRequest();f.open("get",d,true);f.onreadystatechange=function(){if(f.readyState==4){if((f.status>=200&&f.status<300)||f.status==304){if(f.response!=""){g(d,b,f.response);return}}a.jsfallback(d,b)}};f.send(null)}catch(c){a.jsfallback(d,b)}};lsloader.iocss=function(f,c,h,a){var b=this;try{var g=new XMLHttpRequest();g.open("get",f,true);g.onreadystatechange=function(){if(g.readyState==4){if((g.status>=200&&g.status<300)||g.status==304){if(g.response!=""){h(g.response);a();return}}b.cssfallback(f,c,a)}};g.send(null)}catch(d){b.cssfallback(f,c,a)}};lsloader.iofonts=function(f,c,h,a){var b=this;try{var g=new XMLHttpRequest();g.open("get",f,true);g.onreadystatechange=function(){if(g.readyState==4){if((g.status>=200&&g.status<300)||g.status==304){if(g.response!=""){h(g.response);a();return}}b.cssfallback(f,c,a)}};g.send(null)}catch(d){b.cssfallback(f,c,a)}};lsloader.runjs=function(f,c,e){if(!!c&&!!e){for(var b in this.jsRunSequence){if(this.jsRunSequence[b].name==c){this.jsRunSequence[b].code=e}}}if(!!this.jsRunSequence[0]&&!!this.jsRunSequence[0].code&&this.jsRunSequence[0].status!="failed"){var a=document.createElement("script");a.appendChild(document.createTextNode(this.jsRunSequence[0].code));a.type="text/javascript";document.getElementsByTagName("head")[0].appendChild(a);this.jsRunSequence.shift();if(this.jsRunSequence.length>0){this.runjs()}}else{if(!!this.jsRunSequence[0]&&this.jsRunSequence[0].status=="failed"){var d=this;var a=document.createElement("script");a.src=this.jsRunSequence[0].path;a.type="text/javascript";this.jsRunSequence[0].status="loading";a.onload=function(){d.jsRunSequence.shift();if(d.jsRunSequence.length>0){d.runjs()}};document.body.appendChild(a)}}};lsloader.tagLoad=function(b,a){this.jsRunSequence.push({name:a,code:"",path:b,status:"failed"});this.runjs()};lsloader.jsfallback=function(c,b){if(!!this.jsnamemap[b]){return}else{this.jsnamemap[b]=b}for(var a in this.jsRunSequence){if(this.jsRunSequence[a].name==b){this.jsRunSequence[a].code="";this.jsRunSequence[a].status="failed";this.jsRunSequence[a].path=c}}this.runjs()};lsloader.cssfallback=function(e,c,b){if(!!this.cssnamemap[c]){return}else{this.cssnamemap[c]=1}var d=document.createElement("link");d.type="text/css";d.href=e;d.rel="stylesheet";d.onload=d.onerror=b;var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(d,a)};lsloader.runInlineScript=function(c,b){var a=document.getElementById(b).innerText;this.jsRunSequence.push({name:c,code:a});this.runjs()}})();</script>
+
+    <!-- Import queue -->
+    <script>function Queue(){this.dataStore=[];this.offer=b;this.poll=d;this.execNext=a;this.debug=false;this.startDebug=c;function b(e){if(this.debug){console.log("Offered a Queued Function.")}if(typeof e==="function"){this.dataStore.push(e)}else{console.log("You must offer a function.")}}function d(){if(this.debug){console.log("Polled a Queued Function.")}return this.dataStore.shift()}function a(){var e=this.poll();if(e!==undefined){if(this.debug){console.log("Run a Queued Function.")}e()}}function c(){this.debug=true}}var queue=new Queue();</script>
+
+    <!-- Import CSS -->
+    
+        <style id="material_css"></style><script>if(typeof window.lsLoadCSSMaxNums === "undefined")window.lsLoadCSSMaxNums = 0;window.lsLoadCSSMaxNums++;lsloader.load("material_css","/css/material.min.css?Z7a72R1E4SxzBKR/WGctOA==",function(){if(typeof window.lsLoadCSSNums === "undefined")window.lsLoadCSSNums = 0;window.lsLoadCSSNums++;if(window.lsLoadCSSNums == window.lsLoadCSSMaxNums)document.documentElement.style.display="";}, false)</script>
+        <style id="style_css"></style><script>if(typeof window.lsLoadCSSMaxNums === "undefined")window.lsLoadCSSMaxNums = 0;window.lsLoadCSSMaxNums++;lsloader.load("style_css","/css/style.min.css?MKetZV3cUTfDxvMffaOezg==",function(){if(typeof window.lsLoadCSSNums === "undefined")window.lsLoadCSSNums = 0;window.lsLoadCSSNums++;if(window.lsLoadCSSNums == window.lsLoadCSSMaxNums)document.documentElement.style.display="";}, false)</script>
+
+        
+            
+                <style id="prettify_css"></style><script>if(typeof window.lsLoadCSSMaxNums === "undefined")window.lsLoadCSSMaxNums = 0;window.lsLoadCSSMaxNums++;lsloader.load("prettify_css","/css/prettify.min.css?VbSuLZyOpxJuf3o2tYEOVg==",function(){if(typeof window.lsLoadCSSNums === "undefined")window.lsLoadCSSNums = 0;window.lsLoadCSSNums++;if(window.lsLoadCSSNums == window.lsLoadCSSMaxNums)document.documentElement.style.display="";}, false)</script>
+                <style id="prettify_theme"></style><script>if(typeof window.lsLoadCSSMaxNums === "undefined")window.lsLoadCSSMaxNums = 0;window.lsLoadCSSMaxNums++;lsloader.load("prettify_theme","/css/prettify/github-v2.min.css?AfzKxt++K+/lhZBlSjnxwg==",function(){if(typeof window.lsLoadCSSNums === "undefined")window.lsLoadCSSNums = 0;window.lsLoadCSSNums++;if(window.lsLoadCSSNums == window.lsLoadCSSMaxNums)document.documentElement.style.display="";}, false)</script>
+            
+        
+
+    
+
+    
+
+    <!-- Config CSS -->
+
+<!-- Other Styles -->
+<style>
+  body, html {
+    font-family: Roboto, "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+    overflow-x: hidden !important;
+  }
+  
+  code {
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+  }
+
+  a {
+    color: #00838F;
+  }
+
+  .mdl-card__media,
+  #search-label,
+  #search-form-label:after,
+  #scheme-Paradox .hot_tags-count,
+  #scheme-Paradox .sidebar_archives-count,
+  #scheme-Paradox .sidebar-colored .sidebar-header,
+  #scheme-Paradox .sidebar-colored .sidebar-badge{
+    background-color: #0097A7 !important;
+  }
+
+  /* Sidebar User Drop Down Menu Text Color */
+  #scheme-Paradox .sidebar-colored .sidebar-nav>.dropdown>.dropdown-menu>li>a:hover,
+  #scheme-Paradox .sidebar-colored .sidebar-nav>.dropdown>.dropdown-menu>li>a:focus {
+    color: #0097A7 !important;
+  }
+
+  #post_entry-right-info,
+  .sidebar-colored .sidebar-nav li:hover > a,
+  .sidebar-colored .sidebar-nav li:hover > a i,
+  .sidebar-colored .sidebar-nav li > a:hover,
+  .sidebar-colored .sidebar-nav li > a:hover i,
+  .sidebar-colored .sidebar-nav li > a:focus i,
+  .sidebar-colored .sidebar-nav > .open > a,
+  .sidebar-colored .sidebar-nav > .open > a:hover,
+  .sidebar-colored .sidebar-nav > .open > a:focus,
+  #ds-reset #ds-ctx .ds-ctx-entry .ds-ctx-head a {
+    color: #0097A7 !important;
+  }
+
+  .toTop {
+    background: #757575 !important;
+  }
+
+  .material-layout .material-post>.material-nav,
+  .material-layout .material-index>.material-nav,
+  .material-nav a {
+    color: #757575;
+  }
+
+  #scheme-Paradox .MD-burger-layer {
+    background-color: #757575;
+  }
+
+  #scheme-Paradox #post-toc-trigger-btn {
+    color: #757575;
+  }
+
+  .post-toc a:hover {
+    color: #00838F;
+    text-decoration: underline;
+  }
+
+</style>
+
+
+<!-- Theme Background Related-->
+
+    <style>
+      body{
+        background-color: #F5F5F5;
+      }
+
+      /* blog_info bottom background */
+      #scheme-Paradox .material-layout .something-else .mdl-card__supporting-text{
+        background-color: #fff;
+      }
+    </style>
+
+
+
+
+<!-- Fade Effect -->
+
+    <style>
+      .fade {
+        transition: all 800ms linear;
+        -webkit-transform: translate3d(0,0,0);
+        -moz-transform: translate3d(0,0,0);
+        -ms-transform: translate3d(0,0,0);
+        -o-transform: translate3d(0,0,0);
+        transform: translate3d(0,0,0);
+        opacity: 1;
+      }
+
+      .fade.out{
+        opacity: 0;
+      }
+    </style>
+
+
+<!-- Import Font -->
+<!-- Import Roboto -->
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
+
+
+<!-- Import Material Icons -->
+
+
+    <style id="material_icons"></style><script>if(typeof window.lsLoadCSSMaxNums === "undefined")window.lsLoadCSSMaxNums = 0;window.lsLoadCSSMaxNums++;lsloader.load("material_icons","/css/material-icons.css?pqhB/Rd/ab0H2+kZp0RDmw==",function(){if(typeof window.lsLoadCSSNums === "undefined")window.lsLoadCSSNums = 0;window.lsLoadCSSNums++;if(window.lsLoadCSSNums == window.lsLoadCSSMaxNums)document.documentElement.style.display="";}, false)</script>
+
+
+
+
+    <!-- Import jQuery -->
+    
+        <script>lsloader.load("jq_js","/js/jquery.min.js?qcusAULNeBksqffqUM2+Ig==", true)</script>
+    
+
+    <!-- WebAPP Icons -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="SCHHX">
+    <meta name="msapplication-starturl" content="https://schhx.github.io/2019/03/09/Redis基本数据结构之内部编码/">
+    <meta name="msapplication-navbutton-color" content="#0097A7">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="SCHHX">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon" href="/img/favicon.png">
+
+    <!-- Site Verification -->
+    
+    
+
+    <!-- RSS -->
+    
+
+    <!-- The Open Graph protocol -->
+    <meta property="og:url" content="https://schhx.github.io/2019/03/09/Redis基本数据结构之内部编码/">
+    <meta property="og:type" content="blog">
+    <meta property="og:title" content="Redis基本数据结构之内部编码 | SCHHX">
+    <meta property="og:image" content="/img/favicon.png">
+    <meta property="og:description" content="前面我们讲到了Redis有5种基本数据结构：string、hash、list、set、zset，但是这5种数据结构内部是怎么实现的呢？">
+    <meta property="og:article:tag" content="Redis"> 
+
+    
+        <meta property="article:published_time" content="Sat Mar 09 2019 07:50:47 GMT+0800">
+        <meta property="article:modified_time" content="Tue Nov 26 2019 11:41:44 GMT+0800">
+    
+
+    <!-- The Twitter Card protocol -->
+    <meta name="twitter:card" content="summary_large_image">
+
+    <!-- Add canonical link for SEO -->
+    
+        <link rel="canonical" href="https://schhx.github.io/2019/03/09/Redis基本数据结构之内部编码/index.html">
+    
+
+    <!-- Structured-data for SEO -->
+    
+        
+
+
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "mainEntityOfPage": "https://schhx.github.io/2019/03/09/Redis基本数据结构之内部编码/index.html",
+    "headline": "Redis基本数据结构之内部编码",
+    "datePublished": "Sat Mar 09 2019 07:50:47 GMT+0800",
+    "dateModified": "Tue Nov 26 2019 11:41:44 GMT+0800",
+    "author": {
+        "@type": "Person",
+        "name": "SCHHX",
+        "image": {
+            "@type": "ImageObject",
+            "url": "/img/avatar.png"
+        },
+        "description": "Know Yourself"
+    },
+    "publisher": {
+        "@type": "Organization",
+        "name": "SCHHX",
+        "logo": {
+            "@type":"ImageObject",
+            "url": "/img/favicon.png"
+        }
+    },
+    "keywords": ",Redis",
+    "description": "前面我们讲到了Redis有5种基本数据结构：string、hash、list、set、zset，但是这5种数据结构内部是怎么实现的呢？",
+}
+</script>
+
+
+    
+
+    <!-- Analytics -->
+    
+    
+    
+
+    <!-- Custom Head -->
+    
+
+</head>
+
+
+    
+        <body id="scheme-Paradox" class="lazy">
+            <div class="material-layout  mdl-js-layout has-drawer is-upgraded">
+                
+
+                <!-- Main Container -->
+                <main class="material-layout__content" id="main">
+
+                    <!-- Top Anchor -->
+                    <div id="top"></div>
+
+                    
+                        <!-- Hamburger Button -->
+                        <button class="MD-burger-icon sidebar-toggle">
+                            <span class="MD-burger-layer"></span>
+                        </button>
+                    
+
+                    <!-- Post TOC -->
+
+    
+    <!-- Back Button -->
+    <!--
+    <div class="material-back" id="backhome-div" tabindex="0">
+        <a class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon"
+           href="#" onclick="window.history.back();return false;"
+           target="_self"
+           role="button"
+           data-upgraded=",MaterialButton,MaterialRipple">
+            <i class="material-icons" role="presentation">arrow_back</i>
+            <span class="mdl-button__ripple-container">
+                <span class="mdl-ripple"></span>
+            </span>
+        </a>
+    </div>
+    -->
+
+
+    <!-- Left aligned menu below button -->
+    
+    
+    <button id="post-toc-trigger-btn"
+        class="mdl-button mdl-js-button mdl-button--icon">
+        <i class="material-icons">format_list_numbered</i>
+    </button>
+
+    <ul class="post-toc-wrap mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect" for="post-toc-trigger-btn" style="max-height:80vh; overflow-y:scroll;">
+        <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#背景知识"><span class="post-toc-number">1.</span> <span class="post-toc-text">背景知识</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#怎么查看内部编码"><span class="post-toc-number">1.1.</span> <span class="post-toc-text">怎么查看内部编码</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#RedisObject"><span class="post-toc-number">1.2.</span> <span class="post-toc-text">RedisObject</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#string"><span class="post-toc-number">2.</span> <span class="post-toc-text">string</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#内部编码"><span class="post-toc-number">2.1.</span> <span class="post-toc-text">内部编码</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#SDS"><span class="post-toc-number">2.2.</span> <span class="post-toc-text">SDS</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#embstr-VS-raw"><span class="post-toc-number">2.3.</span> <span class="post-toc-text">embstr VS raw</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#扩容"><span class="post-toc-number">2.4.</span> <span class="post-toc-text">扩容</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#hash"><span class="post-toc-number">3.</span> <span class="post-toc-text">hash</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#内部编码-1"><span class="post-toc-number">3.1.</span> <span class="post-toc-text">内部编码</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#list"><span class="post-toc-number">4.</span> <span class="post-toc-text">list</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#内部编码-2"><span class="post-toc-number">4.1.</span> <span class="post-toc-text">内部编码</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#set"><span class="post-toc-number">5.</span> <span class="post-toc-text">set</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#内部编码-3"><span class="post-toc-number">5.1.</span> <span class="post-toc-text">内部编码</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#zset"><span class="post-toc-number">6.</span> <span class="post-toc-text">zset</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#内部编码-4"><span class="post-toc-number">6.1.</span> <span class="post-toc-text">内部编码</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#内部编码底层结构"><span class="post-toc-number">7.</span> <span class="post-toc-text">内部编码底层结构</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#intset"><span class="post-toc-number">7.1.</span> <span class="post-toc-text">intset</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#dict"><span class="post-toc-number">7.2.</span> <span class="post-toc-text">dict</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#dict-内部结构"><span class="post-toc-number">7.2.1.</span> <span class="post-toc-text">dict 内部结构</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#渐进式rehash"><span class="post-toc-number">7.2.2.</span> <span class="post-toc-text">渐进式rehash</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#扩容-1"><span class="post-toc-number">7.2.3.</span> <span class="post-toc-text">扩容</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#缩容"><span class="post-toc-number">7.2.4.</span> <span class="post-toc-text">缩容</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#ziplist"><span class="post-toc-number">7.3.</span> <span class="post-toc-text">ziplist</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#优点"><span class="post-toc-number">7.3.1.</span> <span class="post-toc-text">优点</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#缺点"><span class="post-toc-number">7.3.2.</span> <span class="post-toc-text">缺点</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#linkedlist"><span class="post-toc-number">7.4.</span> <span class="post-toc-text">linkedlist</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#优点-1"><span class="post-toc-number">7.4.1.</span> <span class="post-toc-text">优点</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#缺点-1"><span class="post-toc-number">7.4.2.</span> <span class="post-toc-text">缺点</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#quicklist"><span class="post-toc-number">7.5.</span> <span class="post-toc-text">quicklist</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#skiplist"><span class="post-toc-number">7.6.</span> <span class="post-toc-text">skiplist</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#参考文档"><span class="post-toc-number">8.</span> <span class="post-toc-text">参考文档</span></a></li></ol>
+    </ul>
+    
+
+
+
+
+<!-- Layouts -->
+
+    <!-- Post Module -->
+    <div class="material-post_container">
+
+        <div class="material-post mdl-grid">
+            <div class="mdl-card mdl-shadow--4dp mdl-cell mdl-cell--12-col">
+
+                <!-- Post Header(Thumbnail & Title) -->
+                
+    <!-- Paradox Post Header -->
+    
+        
+            <!-- Random Thumbnail -->
+            <div class="post_thumbnail-random mdl-card__media mdl-color-text--grey-50">
+            <script type="text/ls-javascript" id="post-thumbnail-script">
+    var randomNum = Math.floor(Math.random() * 19 + 1);
+
+    $('.post_thumbnail-random').attr('data-original', '/img/random/material-' + randomNum + '.png');
+    $('.post_thumbnail-random').addClass('lazy');
+</script>
+
+        
+    
+            <p class="article-headline-p">
+                Redis基本数据结构之内部编码
+            </p>
+        </div>
+
+
+
+
+
+                
+                    <!-- Paradox Post Info -->
+                    <div class="mdl-color-text--grey-700 mdl-card__supporting-text meta">
+
+    <!-- Author Avatar -->
+    <div id="author-avatar">
+        <img src="/img/avatar.png" width="44px" height="44px" alt="Author Avatar"/>
+    </div>
+    <!-- Author Name & Date -->
+    <div>
+        <strong>SCHHX</strong>
+        <span>3月 09, 2019</span>
+    </div>
+
+    <div class="section-spacer"></div>
+
+    <!-- Favorite -->
+    <!--
+        <button id="article-functions-like-button" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon btn-like">
+            <i class="material-icons" role="presentation">favorite</i>
+            <span class="visuallyhidden">favorites</span>
+        </button>
+    -->
+
+    <!-- Qrcode -->
+    
+
+    <!-- Tags (bookmark) -->
+    
+    <button id="article-functions-viewtags-button" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon">
+        <i class="material-icons" role="presentation">bookmark</i>
+        <span class="visuallyhidden">bookmark</span>
+    </button>
+    <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="article-functions-viewtags-button">
+        <li class="mdl-menu__item">
+        <a class="post_tag-link" href="/tags/Redis/">Redis</a>
+    </ul>
+    
+
+    <!-- Share -->
+    
+        <button id="article-fuctions-share-button" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon">
+    <i class="material-icons" role="presentation">share</i>
+    <span class="visuallyhidden">share</span>
+</button>
+<ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="article-fuctions-share-button">
+    
+
+    
+
+    <!-- Share Weibo -->
+    
+        <a class="post_share-link" href="http://service.weibo.com/share/share.php?appkey=&title=Redis基本数据结构之内部编码&url=https://schhx.github.io/2019/03/09/Redis基本数据结构之内部编码/index.html&pic=https://schhx.github.io/img/favicon.png&searchPic=false&style=simple" target="_blank">
+            <li class="mdl-menu__item">
+                分享到微博
+            </li>
+        </a>
+    
+
+    <!-- Share Twitter -->
+    
+        <a class="post_share-link" href="https://twitter.com/intent/tweet?text=Redis基本数据结构之内部编码&url=https://schhx.github.io/2019/03/09/Redis基本数据结构之内部编码/index.html&via=SCHHX" target="_blank">
+            <li class="mdl-menu__item">
+                分享到 Twitter
+            </li>
+        </a>
+    
+
+    <!-- Share Facebook -->
+    
+        <a class="post_share-link" href="https://www.facebook.com/sharer/sharer.php?u=https://schhx.github.io/2019/03/09/Redis基本数据结构之内部编码/index.html" target="_blank">
+            <li class="mdl-menu__item">
+                分享到 Facebook
+            </li>
+        </a>
+    
+
+    <!-- Share Google+ -->
+    
+        <a class="post_share-link" href="https://plus.google.com/share?url=https://schhx.github.io/2019/03/09/Redis基本数据结构之内部编码/index.html" target="_blank">
+            <li class="mdl-menu__item">
+                分享到 Google+
+            </li>
+        </a>
+    
+
+    <!-- Share LinkedIn -->
+    
+
+    <!-- Share QQ -->
+    
+
+    <!-- Share Telegram -->
+    
+</ul>
+
+    
+</div>
+
+                
+
+                <!-- Post Content -->
+                <div id="post-content" class="mdl-color-text--grey-700 mdl-card__supporting-text fade out">
+    
+        <p>前面我们讲到了Redis有5种基本数据结构：string、hash、list、set、zset，但是这5种数据结构内部是怎么实现的呢？<a id="more"></a></p>
+<blockquote>
+<p>本篇文章基于 Redis 3.2</p>
+</blockquote>
+<h2 id="背景知识"><a href="#背景知识" class="headerlink" title="背景知识"></a>背景知识</h2><h3 id="怎么查看内部编码"><a href="#怎么查看内部编码" class="headerlink" title="怎么查看内部编码"></a>怎么查看内部编码</h3><p>我们可以通过<code>object encoding key</code>来查看对象的具体编码，比如：</p>
+<pre><code>127.0.0.1:6379&gt; set name zhangsan
+OK
+127.0.0.1:6379&gt; object encoding name
+&quot;embstr&quot;
+</code></pre><p>也可以使用<code>debug object key</code>，比如：</p>
+<pre><code>127.0.0.1:6379&gt; set name sssssssssssssssssssssssssssssssssssssssssssss
+OK
+127.0.0.1:6379&gt; debug object name
+Value at:0x10030aa20 refcount:1 encoding:raw serializedlength:12 lru:8586926 lru_seconds_idle:14
+</code></pre><h3 id="RedisObject"><a href="#RedisObject" class="headerlink" title="RedisObject"></a>RedisObject</h3><p>Redis 存储的所有值对象在内部定义为 RedisObject, 内部结构如下：</p>
+<pre><code>struct RedisObject {
+    int4 type; // 4bits  对象的数据类型
+    int4 encoding; // 4bits  内部编码类型
+    int24 lru; // 24bits  对象最后一次被访问的时间
+    int32 refcount; // 4bytes  被引用的次数
+    void *ptr; // 8bytes，64-bit system 
+} robj;
+</code></pre><p>这里要对 ptr 说明一下，ptr 的内容与数据内容有关，如果存储的是整数，则直接存储数据，否则将表示指向数据的指针。</p>
+<p>这样一个 RedisObject 对象头需要占据 16 字节的存储空间。</p>
+<h2 id="string"><a href="#string" class="headerlink" title="string"></a>string</h2><h3 id="内部编码"><a href="#内部编码" class="headerlink" title="内部编码"></a>内部编码</h3><p>string 的内部编码有3种，Redis 会根据当前值的类型和长度决定使用哪种内部编码实现：</p>
+<ul>
+<li>int ：8个字节的长整形</li>
+<li>embstr ：小于等于44个字节的字符串</li>
+<li>raw ： 大于44个字节的字符串</li>
+</ul>
+<pre><code>127.0.0.1:6379&gt; set stringkey 123
+OK
+127.0.0.1:6379&gt; object encoding stringkey
+&quot;int&quot;
+127.0.0.1:6379&gt; set stringkey abc
+OK
+127.0.0.1:6379&gt; object encoding stringkey
+&quot;embstr&quot;
+127.0.0.1:6379&gt; set stringkey abcdasdsajdsioajfsiojfdsjfndsjjasfbfajdnasndsdsadsajdbsajkdsajdbsa
+OK
+127.0.0.1:6379&gt; object encoding stringkey
+&quot;raw&quot;
+</code></pre><h3 id="SDS"><a href="#SDS" class="headerlink" title="SDS"></a>SDS</h3><p>Redis 的字符串叫着「SDS」，也就是Simple Dynamic String。它的结构是一个带长度信息的字节数组。</p>
+<pre><code>struct SDS&lt;T&gt; {
+  T capacity; // 数组容量
+  T len; // 数组长度
+  byte flags; // 特殊标识位，不理睬它
+  byte[] content; // 数组内容，存储实际的字符串内容
+}
+</code></pre><p>上面的 SDS 结构使用了范型 T，为什么不直接用 int 呢，这是因为当字符串比较短时，len 和 capacity 可以使用 byte 和 short 来表示，Redis 为了对内存做极致的优化，不同长度的字符串使用不同的结构体来表示。</p>
+<p>capacity 和 len 有什么区别呢？capacity 表示所分配数组的长度，len 表示字符串的实际长度。我们知道字符串是可以修改的字符串，它要支持 append 操作。如果数组没有冗余空间，那么追加操作必然涉及到分配新数组，然后将旧内容复制过来，再 append 新内容。如果字符串的长度非常长，这样的内存分配和复制开销就会非常大。</p>
+<h3 id="embstr-VS-raw"><a href="#embstr-VS-raw" class="headerlink" title="embstr VS raw"></a>embstr VS raw</h3><p><img src="redis-string.png" alt></p>
+<p>如图所示，embstr 存储形式是这样一种存储形式，它将 RedisObject 对象头和 SDS 对象连续存在一起，使用 jemalloc 方法一次分配。而 raw 存储形式不一样，它需要两次 jemalloc，两个对象头在内存地址上一般是不连续的。</p>
+<p>为什么 embstr 和 raw 的分界线是44个字节呢？上面我们说到 SDS 会根据不同长度的字符串使用不同的结构体来表示，当字符串较小时，SDS 的结构如下：</p>
+<pre><code>struct SDS {
+    int8 capacity; // 1byte
+    int8 len; // 1byte
+    int8 flags; // 1byte
+    byte[] content; // 内联数组，长度为 capacity
+}
+</code></pre><p>在字符串比较小时，SDS 对象头的大小是 capacity+3，至少是 3。意味着分配一个字符串的最小空间占用为 19 字节 (16+3)。</p>
+<p>而内存分配器 jemalloc 分配内存大小的单位都是 2、4、8、16、32、64 等等，为了能容纳一个完整的 embstr 对象，jemalloc 最少会分配 32 字节的空间，如果字符串再稍微长一点，那就是 64 字节的空间。如果总体超出了 64 字节，Redis 认为它是一个大字符串，不再使用 emdstr 形式存储，而改用 raw 形式。</p>
+<p>当分配 64 字节的时候，留给 content 的长度最多只有 45(64-19) 字节了，字符串又是以<code>\0</code>结尾（之所以多出这样一个字节，是为了便于直接使用 glibc 的字符串处理函数，以及为了便于字符串的调试打印输出），所以 embstr 最大能容纳的字符串长度就是 44。</p>
+<h3 id="扩容"><a href="#扩容" class="headerlink" title="扩容"></a>扩容</h3><p>字符串在长度小于 1M 之前，扩容空间采用加倍策略，也就是保留 100% 的冗余空间。当长度超过 1M 之后，为了避免加倍后的冗余空间过大而导致浪费，每次扩容只会多分配 1M 大小的冗余空间。</p>
+<h2 id="hash"><a href="#hash" class="headerlink" title="hash"></a>hash</h2><h3 id="内部编码-1"><a href="#内部编码-1" class="headerlink" title="内部编码"></a>内部编码</h3><p>hash 内部编码有两种：</p>
+<ul>
+<li>ziplist : 当元素个数小于 hash-max-ziplist-entries 配置（默认 512 个），同时所有的值都小于 hash-max-ziplist-value 配置（默认 64 字节）时，Redis 会使用 ziplist 做为 hash 的内部实现，因为 ziplist 使用更加紧凑的结构实现多个元素的连续存储，更加节省内存。</li>
+<li>hashtable : 当无法满足 ziplist 的条件时，Redis 使用 hashtable 作为 hash 的内部实现，因为此时 ziplist 读写效率会下降，而 hashtable 的读写时间复杂度为 O(1)。</li>
+</ul>
+<pre><code>127.0.0.1:6379&gt; hmset hashkey f1 v1 f2 v2
+OK
+127.0.0.1:6379&gt; object encoding hashkey
+&quot;ziplist&quot;
+127.0.0.1:6379&gt; hset hashkey f3 dasdnsajndajdnasdnasljdnaslkdnaskdnasjndsaldnasldnsajdnasldnaslkdnsadsakldnaskdnaslkdnasldksanldasdans
+(integer) 1
+127.0.0.1:6379&gt; object encoding hashkey
+&quot;hashtable&quot;
+</code></pre><h2 id="list"><a href="#list" class="headerlink" title="list"></a>list</h2><h3 id="内部编码-2"><a href="#内部编码-2" class="headerlink" title="内部编码"></a>内部编码</h3><p>Redis 的早期版本 list 内部编码有两种：</p>
+<ul>
+<li>ziplist : 当元素个数小于 list-max-ziplist-entries 配置（默认 512 个），同时所有的值都小于 list-max-ziplist-value 配置（默认 64 字节）时，Redis 会使用 ziplist 做为 list 的内部实现。</li>
+<li>linkedlist : 当无法满足 ziplist 的条件时，Redis 使用 linkedlist 作为 list 的内部实现。</li>
+</ul>
+<p>但是 Redis 3.2 list 内部编码只有一种：</p>
+<ul>
+<li>quicklist : 它是以一个 ziplist 为节点的 linkedlist，它结合了 ziplist 和 linkedlist 两者的优势。quicklist 内部默认单个 ziplist 长度为 8k 字节，超出了这个字节数，就会新起一个 ziplist。ziplist 的长度由配置参数list-max-ziplist-size决定。</li>
+</ul>
+<pre><code>127.0.0.1:6379&gt; rpush listkey e1 e2 e3
+(integer) 3
+127.0.0.1:6379&gt; object encoding listkey
+&quot;quicklist&quot;
+</code></pre><h2 id="set"><a href="#set" class="headerlink" title="set"></a>set</h2><h3 id="内部编码-3"><a href="#内部编码-3" class="headerlink" title="内部编码"></a>内部编码</h3><p>set 内部编码有两种：</p>
+<ul>
+<li>intset : 当集合中的元素都是整数且元素个数小于 set-max-intset-entries 配置（默认 512 个）时。</li>
+<li>hashtable : 当无法满足 intset 条件时。</li>
+</ul>
+<pre><code>127.0.0.1:6379&gt; sadd setkey 1 2 3 4
+(integer) 4
+127.0.0.1:6379&gt; object encoding setkey
+&quot;intset&quot;
+127.0.0.1:6379&gt; sadd setkey a
+(integer) 1
+127.0.0.1:6379&gt; object encoding setkey
+&quot;hashtable&quot;
+</code></pre><h2 id="zset"><a href="#zset" class="headerlink" title="zset"></a>zset</h2><h3 id="内部编码-4"><a href="#内部编码-4" class="headerlink" title="内部编码"></a>内部编码</h3><p>zset 内部编码有两种：</p>
+<ul>
+<li>ziplist : 当元素个数小于 zset-max-ziplist-entries 配置（默认 128 个），同时所有的值都小于 zset-max-ziplist-value 配置（默认 64 字节）时。</li>
+<li>skiplist : 当无法满足 ziplist 条件时。</li>
+</ul>
+<pre><code>127.0.0.1:6379&gt; zadd zsetkey 50 e1 60 e2 30 e3
+(integer) 3
+127.0.0.1:6379&gt; object encoding zsetkey
+&quot;ziplist&quot;
+127.0.0.1:6379&gt; zadd zsetkey 20 &quot;dasdnsajndajdnasdnasljdnaslkdnaskdnasjndsaldnasldnsajdnasldnaslkdnsadsakldnaskdnaslkdnasldksanldasdans&quot;
+(integer) 1
+127.0.0.1:6379&gt; object encoding zsetkey
+&quot;skiplist&quot;
+</code></pre><h2 id="内部编码底层结构"><a href="#内部编码底层结构" class="headerlink" title="内部编码底层结构"></a>内部编码底层结构</h2><h3 id="intset"><a href="#intset" class="headerlink" title="intset"></a>intset</h3><p>intset 会在 set 中使用，其结构如下</p>
+<pre><code>struct intset&lt;T&gt; {
+    int32 encoding; // 决定整数位宽是 16 位、32 位还是 64 位
+    int32 length; // 元素个数
+    int&lt;T&gt; contents; // 整数数组，可以是 16 位、32 位和 64 位
+}
+</code></pre><p><img src="intset.png" alt></p>
+<p>intset 保存的整数类型根据长度划分，当保存的整数超过当前类型时，将会触发自动升级操作且升级后不再做回退。因此使用 intset 编码的集合时，尽量保持整数范围一致，防止个别大整数触发集合升级操作，产生内存浪费。</p>
+<h3 id="dict"><a href="#dict" class="headerlink" title="dict"></a>dict</h3><p>当 hash 内元素过多时，使用的是 hashtable 这种内部编码，它底层其实是用 dict 来实现的。dict 是 Redis 服务器中出现最为频繁的复合型数据结构，除了 hash 结构的数据会用到字典外，整个 Redis 数据库的所有 key 和 value 也组成了一个全局字典，还有带过期时间的 key 集合也是一个字典。zset 集合中存储 value 和 score 值的映射关系也是通过 dict 结构实现的。</p>
+<h4 id="dict-内部结构"><a href="#dict-内部结构" class="headerlink" title="dict 内部结构"></a>dict 内部结构</h4><p><img src="dict.png" alt> </p>
+<p>dict 结构内部包含两个 hashtable，通常情况下只有一个 hashtable 是有值的。但是在 dict 扩容缩容时，需要分配新的 hashtable，然后进行渐进式搬迁，这时候两个 hashtable 存储的分别是旧的 hashtable 和新的 hashtable。待搬迁结束后，旧的 hashtable 被删除，新的 hashtable 取而代之。</p>
+<p>hashtable 的结构和 Java 的 HashMap 几乎是一样的，都是通过分桶的方式解决 hash 冲突。第一维是数组，第二维是链表。数组中存储的是第二维链表的第一个元素的指针。</p>
+<h4 id="渐进式rehash"><a href="#渐进式rehash" class="headerlink" title="渐进式rehash"></a>渐进式rehash</h4><p>大字典的扩容是比较耗时间的，需要重新申请新的数组，然后将旧字典所有链表中的元素重新挂接到新的数组下面，这是一个O(n)级别的操作，作为单线程的Redis表示很难承受这样耗时的过程，所以Redis使用渐进式rehash小步搬迁。</p>
+<p>当对 hash 表做查找、新增、删除操作时，都会触发 rehash 小步搬迁，同时 Redis 还会在定时任务中对字典进行主动搬迁。</p>
+<h4 id="扩容-1"><a href="#扩容-1" class="headerlink" title="扩容"></a>扩容</h4><p>正常情况下，当 hash 表中元素的个数等于第一维数组的长度时，就会开始扩容，扩容的新数组是原数组大小的 2 倍。不过如果 Redis 正在做 bgsave，为了减少内存页的过多分离 (Copy On Write)，Redis 尽量不去扩容 (dict_can_resize)，但是如果 hash 表已经非常满了，元素的个数已经达到了第一维数组长度的 5 倍 (dict_force_resize_ratio)，说明 hash 表已经过于拥挤了，这个时候就会强制扩容。</p>
+<h4 id="缩容"><a href="#缩容" class="headerlink" title="缩容"></a>缩容</h4><p>当 hash 表因为元素的逐渐删除变得越来越稀疏时，Redis 会对 hash 表进行缩容来减少 hash 表的第一维数组空间占用。缩容的条件是元素个数低于数组长度的 10%。缩容不会考虑 Redis 是否正在做 bgsave。</p>
+<h3 id="ziplist"><a href="#ziplist" class="headerlink" title="ziplist"></a>ziplist</h3><p>ziplist 在 hash、list、zset中都有使用，ziplist是一块连续的内存空间，元素之间紧挨着存储，没有任何冗余空隙，其结构如下：</p>
+<pre><code>struct ziplist&lt;T&gt; {
+    int32 zlbytes; // 整个压缩列表占用字节数
+    int32 zltail_offset; // 最后一个元素距离压缩列表起始位置的偏移量，用于快速定位到最后一个节点
+    int16 zllength; // 元素个数
+    T[] entries; // 元素内容列表，挨个挨个紧凑存储
+    int8 zlend; // 标志压缩列表的结束，值恒为 0xFF
+}
+</code></pre><p><img src="ziplist.png" alt></p>
+<h4 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h4><p>降低内存的使用，适合存储较小对象和长度有限的数据。</p>
+<h4 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h4><ul>
+<li>新增删除操作设计内存重新分配或者释放，加大了操作的复杂性</li>
+<li>读写操作涉及复杂的指针移动，耗时增加</li>
+</ul>
+<h3 id="linkedlist"><a href="#linkedlist" class="headerlink" title="linkedlist"></a>linkedlist</h3><p>linkedlist 就是普通的双向链表，其结构如下：</p>
+<pre><code>// 链表
+struct list {
+    listNode *head;
+    listNode *tail;
+    long length;
+}
+
+// 链表的节点
+struct listNode&lt;T&gt; {
+    listNode* prev;
+    listNode* next;
+    T value;
+}
+</code></pre><h4 id="优点-1"><a href="#优点-1" class="headerlink" title="优点"></a>优点</h4><p>增加、删除元素时操作简单</p>
+<h4 id="缺点-1"><a href="#缺点-1" class="headerlink" title="缺点"></a>缺点</h4><p>附加空间相对太高，prev 和 next 指针就要占去 16 个字节 (64bit 系统的指针是 8 个字节)，另外每个节点的内存都是单独分配，会加剧内存的碎片化，影响内存管理效率。</p>
+<h3 id="quicklist"><a href="#quicklist" class="headerlink" title="quicklist"></a>quicklist</h3><p>quicklist 结合了 ziplist 和 linkedlist 两者的优势。quicklist 内部默认单个 ziplist 长度为 8k 字节，超出了这个字节数，就会新起一个 ziplist。ziplist 的长度由配置参数list-max-ziplist-size决定。</p>
+<p><img src="quicklist.png" alt></p>
+<h3 id="skiplist"><a href="#skiplist" class="headerlink" title="skiplist"></a>skiplist</h3><p>skiplist 是在链表的基础上改进而来，由于链表查找的时间复杂度是 O(n)，skiplist 通过增加多层索引来快速查找，其基本结构如图所示：</p>
+<p><img src="skiplist.png" alt></p>
+<p>skiplist 搜索的过程是从上层往下层逐渐搜索，类似于二分查找，时间复杂度将会降到 O(log(n))。</p>
+<h2 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h2><ul>
+<li>《Redis深度历险》</li>
+<li>《Redis开发与运维》</li>
+</ul>
+
+        
+                <blockquote style="margin: 2em 0 0;padding: 0.5em 1em;border-left: 3px solid #F44336;background-color: #F5F5F5;list-style: none;">
+                    <p><strong>
+                         
+                            本作品采用<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">知识共享署名 4.0 国际许可协议</a>进行许可，转载请注明原文链接
+                        </strong>
+                        <br>
+                        <strong>本文链接：</strong><a href="https://schhx.github.io/2019/03/09/Redis基本数据结构之内部编码/">https://schhx.github.io/2019/03/09/Redis基本数据结构之内部编码/</a>
+                    </p>
+                </blockquote>
+        
+    
+
+    
+</div>
+
+
+                
+
+                <!-- Post Comments -->
+                
+                    
+                
+            </div>
+
+            <!-- Post Prev & Next Nav -->
+            <nav class="material-nav mdl-color-text--grey-50 mdl-cell mdl-cell--12-col">
+    <!-- Prev Nav -->
+    
+        <a href="/2019/03/09/Redis缓存设计/" id="post_nav-newer" class="prev-content">
+            <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900" role="presentation">
+                <i class="material-icons">arrow_back</i>
+            </button>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            新篇
+        </a>
+    
+
+    <!-- Section Spacer -->
+    <div class="section-spacer"></div>
+
+    <!-- Next Nav -->
+    
+        <a href="/2019/03/06/Redis高级数据结构/" id="post_nav-older" class="next-content">
+            旧篇
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900" role="presentation">
+                <i class="material-icons">arrow_forward</i>
+            </button>
+        </a>
+    
+</nav>
+
+        </div>
+    </div>
+
+
+
+                    
+                        <!-- Overlay For Active Sidebar -->
+<div class="sidebar-overlay"></div>
+
+<!-- Material sidebar -->
+<aside id="sidebar" class="sidebar sidebar-colored sidebar-fixed-left" role="navigation">
+    <div id="sidebar-main">
+        <!-- Sidebar Header -->
+        <div class="sidebar-header header-cover" style="background-image: url(/img/sidebar_header.png);">
+    <!-- Top bar -->
+    <div class="top-bar"></div>
+
+    <!-- Sidebar toggle button -->
+    <button type="button" class="sidebar-toggle mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" style="display: initial;" data-upgraded=",MaterialButton,MaterialRipple">
+        <i class="material-icons">clear_all</i>
+        <span class="mdl-button__ripple-container">
+            <span class="mdl-ripple">
+            </span>
+        </span>
+    </button>
+
+    <!-- Sidebar Avatar -->
+    <div class="sidebar-image">
+        <img src="/img/avatar.png" alt="SCHHX's avatar">
+    </div>
+
+    <!-- Sidebar Email -->
+    <a data-toggle="dropdown" class="sidebar-brand" href="#settings-dropdown">
+        
+        <b class="caret"></b>
+    </a>
+</div>
+
+
+        <!-- Sidebar Navigation  -->
+        <ul class="nav sidebar-nav">
+    <!-- User dropdown  -->
+    <li class="dropdown">
+        <ul id="settings-dropdown" class="dropdown-menu">
+            
+                <li>
+                    <a href="#" target="_blank" title="Email Me">
+                        
+                            <i class="material-icons sidebar-material-icons sidebar-indent-left1pc-element">email</i>
+                        
+                        Email Me
+                    </a>
+                </li>
+            
+        </ul>
+    </li>
+
+    <!-- Homepage -->
+    
+        <li id="sidebar-first-li">
+            <a href="/">
+                
+                    <i class="material-icons sidebar-material-icons">home</i>
+                
+                主页
+            </a>
+        </li>
+        
+    
+
+    <!-- Archives  -->
+    
+        <li class="dropdown">
+            <a href="#" class="ripple-effect dropdown-toggle" data-toggle="dropdown">
+                
+                    <i class="material-icons sidebar-material-icons">inbox</i>
+                
+                    归档
+                <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+            <li>
+                <a class="sidebar_archives-link" href="/archives/2020/06/">六月 2020<span class="sidebar_archives-count">3</span></a></li><li><a class="sidebar_archives-link" href="/archives/2020/05/">五月 2020<span class="sidebar_archives-count">1</span></a></li><li><a class="sidebar_archives-link" href="/archives/2020/04/">四月 2020<span class="sidebar_archives-count">8</span></a></li><li><a class="sidebar_archives-link" href="/archives/2019/12/">十二月 2019<span class="sidebar_archives-count">1</span></a></li><li><a class="sidebar_archives-link" href="/archives/2019/06/">六月 2019<span class="sidebar_archives-count">2</span></a></li><li><a class="sidebar_archives-link" href="/archives/2019/04/">四月 2019<span class="sidebar_archives-count">9</span></a></li><li><a class="sidebar_archives-link" href="/archives/2019/03/">三月 2019<span class="sidebar_archives-count">14</span></a></li><li><a class="sidebar_archives-link" href="/archives/2018/11/">十一月 2018<span class="sidebar_archives-count">2</span></a></li><li><a class="sidebar_archives-link" href="/archives/2018/10/">十月 2018<span class="sidebar_archives-count">3</span></a></li><li><a class="sidebar_archives-link" href="/archives/2018/09/">九月 2018<span class="sidebar_archives-count">5</span></a></li><li><a class="sidebar_archives-link" href="/archives/2018/08/">八月 2018<span class="sidebar_archives-count">4</span></a></li><li><a class="sidebar_archives-link" href="/archives/2018/07/">七月 2018<span class="sidebar_archives-count">4</span></a></li><li><a class="sidebar_archives-link" href="/archives/2018/06/">六月 2018<span class="sidebar_archives-count">5</span></a>
+            </ul>
+        </li>
+        
+    
+
+    <!-- Categories  -->
+    
+        <li class="dropdown">
+            <a href="#" class="ripple-effect dropdown-toggle" data-toggle="dropdown">
+                
+                    <i class="material-icons sidebar-material-icons">chrome_reader_mode</i>
+                
+                分类
+                <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+                <li>
+                <a class="sidebar_archives-link" href="/categories/IO/">IO<span class="sidebar_archives-count">1</span></a></li><li><a class="sidebar_archives-link" href="/categories/JVM/">JVM<span class="sidebar_archives-count">4</span></a></li><li><a class="sidebar_archives-link" href="/categories/Java/">Java<span class="sidebar_archives-count">3</span></a></li><li><a class="sidebar_archives-link" href="/categories/Java并发编程/">Java并发编程<span class="sidebar_archives-count">10</span></a></li><li><a class="sidebar_archives-link" href="/categories/Kafka/">Kafka<span class="sidebar_archives-count">4</span></a></li><li><a class="sidebar_archives-link" href="/categories/Linux/">Linux<span class="sidebar_archives-count">3</span></a></li><li><a class="sidebar_archives-link" href="/categories/MySQL/">MySQL<span class="sidebar_archives-count">5</span></a></li><li><a class="sidebar_archives-link" href="/categories/RabbitMQ/">RabbitMQ<span class="sidebar_archives-count">4</span></a></li><li><a class="sidebar_archives-link" href="/categories/Redis/">Redis<span class="sidebar_archives-count">10</span></a></li><li><a class="sidebar_archives-link" href="/categories/Spring/">Spring<span class="sidebar_archives-count">1</span></a></li><li><a class="sidebar_archives-link" href="/categories/SpringBoot入门教程/">SpringBoot入门教程<span class="sidebar_archives-count">6</span></a></li><li><a class="sidebar_archives-link" href="/categories/Spring学习笔记/">Spring学习笔记<span class="sidebar_archives-count">6</span></a></li><li><a class="sidebar_archives-link" href="/categories/源码/">源码<span class="sidebar_archives-count">2</span></a></li><li><a class="sidebar_archives-link" href="/categories/网络协议/">网络协议<span class="sidebar_archives-count">2</span></a></li><li><a class="sidebar_archives-link" href="/categories/随笔/">随笔<span class="sidebar_archives-count">2</span></a>
+            </ul>
+        </li>
+        
+    
+
+    <!-- Pages  -->
+    
+        <li>
+            <a href="/about" title="关于我">
+                
+                    <i class="material-icons sidebar-material-icons">person</i>
+                
+                关于我
+            </a>
+        </li>
+        
+    
+
+    <!-- Article Number  -->
+    
+        <li>
+            <a href="/archives">
+                文章总数
+                <span class="sidebar-badge">61</span>
+            </a>
+        </li>
+        
+    
+</ul>
+
+
+        <!-- Sidebar Footer -->
+        <!--
+I'm glad you use this theme, the development is no so easy, I hope you can keep the copyright, I will thank you so much.
+If you still want to delete the copyrights, could you still retain the first one? Which namely "Theme Material"
+It will not impact the appearance and can give developers a lot of support :)
+
+很高兴您使用并喜欢该主题，开发不易 十分谢谢与希望您可以保留一下版权声明。
+如果您仍然想删除的话 能否只保留第一项呢？即 "Theme Material"
+它不会影响美观并可以给开发者很大的支持和动力。 :)
+-->
+
+<!-- Sidebar Divider -->
+
+    <div class="sidebar-divider"></div>
+
+
+<!-- Theme Material -->
+
+    <a href="https://github.com/viosey/hexo-theme-material"  class="sidebar-footer-text-a" target="_blank">
+        <div class="sidebar-text mdl-button mdl-js-button mdl-js-ripple-effect sidebar-footer-text-div" data-upgraded=",MaterialButton,MaterialRipple">
+            主题 - Material
+            <span class="sidebar-badge badge-circle">i</span>
+        </div>
+    </a>
+
+
+<!-- Help & Support -->
+<!--
+
+-->
+
+<!-- Feedback -->
+<!--
+
+-->
+
+<!-- About Theme -->
+<!--
+
+-->
+
+    </div>
+
+    <!-- Sidebar Image -->
+    
+
+</aside>
+
+                    
+
+                    
+                        <!-- Footer Top Button -->
+                        <div id="back-to-top" class="toTop-wrap">
+    <a href="#top" class="toTop">
+        <i class="material-icons footer_top-i">expand_less</i>
+    </a>
+</div>
+
+                    
+
+                    <!--Footer-->
+<footer class="mdl-mini-footer" id="bottom">
+    
+        <!-- Paradox Footer Left Section -->
+        <div class="mdl-mini-footer--left-section sns-list">
+    <!-- Twitter -->
+    
+
+    <!-- Facebook -->
+    
+
+    <!-- Google + -->
+    
+        <a href="https://www.google.com/" target="_blank">
+            <button class="mdl-mini-footer--social-btn social-btn footer-sns-gplus">
+                <span class="visuallyhidden">Google Plus</span>
+            </button><!--
+     --></a>
+    
+
+    <!-- Weibo -->
+    
+
+    <!-- Instagram -->
+    
+
+    <!-- Tumblr -->
+    
+
+    <!-- Github -->
+    
+        <a href="https://github.com/schhx" target="_blank">
+            <button class="mdl-mini-footer--social-btn social-btn footer-sns-github">
+                <span class="visuallyhidden">Github</span>
+            </button><!--
+     --></a>
+    
+
+    <!-- LinkedIn -->
+    
+
+    <!-- Zhihu -->
+    
+
+    <!-- Bilibili -->
+    
+
+    <!-- Telegram -->
+    
+    
+    <!-- V2EX -->
+    
+</div>
+
+
+        <!--Copyright-->
+        <div id="copyright">
+            Copyright&nbsp;©<script type="text/javascript">var fd = new Date();document.write("&nbsp;" + fd.getFullYear() + "&nbsp;");</script>SCHHX
+            
+        </div>
+
+        <!-- Paradox Footer Right Section -->
+
+        <!--
+        I am glad you use this theme, the development is no so easy, I hope you can keep the copyright.
+        It will not impact the appearance and can give developers a lot of support :)
+
+        很高兴您使用该主题，开发不易，希望您可以保留一下版权声明。
+        它不会影响美观并可以给开发者很大的支持。 :)
+        -->
+
+        <div class="mdl-mini-footer--right-section">
+            <div>
+                <div class="footer-develop-div">Powered by <a href="https://hexo.io" target="_blank" class="footer-develop-a">Hexo</a></div>
+                <div class="footer-develop-div">Theme - <a href="https://github.com/viosey/hexo-theme-material" target="_blank" class="footer-develop-a">Material</a></div>
+            </div>
+        </div>
+    
+</footer>
+
+
+                    <!-- Import JS File -->
+
+    <script>lsloader.load("lazyload_js","/js/lazyload.min.js?1BcfzuNXqV+ntF6gq+5X3Q==", true)</script>
+
+
+
+    <script>lsloader.load("js_js","/js/js.min.js?V/53wGualMuiPM3xoetD5Q==", true)</script>
+
+
+
+    <script>lsloader.load("np_js","/js/nprogress.js?pl3Qhb9lvqR1FlyLUna1Yw==", true)</script>
+
+
+<script type="text/ls-javascript" id="NProgress-script">
+    NProgress.configure({
+        showSpinner: true
+    });
+    NProgress.start();
+    $('#nprogress .bar').css({
+        'background': '#29d'
+    });
+    $('#nprogress .peg').css({
+        'box-shadow': '0 0 10px #29d, 0 0 15px #29d'
+    });
+    $('#nprogress .spinner-icon').css({
+        'border-top-color': '#29d',
+        'border-left-color': '#29d'
+    });
+    setTimeout(function() {
+        NProgress.done();
+        $('.fade').removeClass('out');
+    }, 800);
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- UC Browser Compatible -->
+<script>
+	var agent = navigator.userAgent.toLowerCase();
+	if(agent.indexOf('ucbrowser')>0) {
+		document.write('<link rel="stylesheet" href="/css/uc.css">');
+	   alert('由于 UC 浏览器使用极旧的内核，而本网站使用了一些新的特性。\n为了您能更好的浏览，推荐使用 Chrome 或 Firefox 浏览器。');
+	}
+</script>
+
+<!-- Import prettify js  -->
+
+    
+        
+            <script>lsloader.load("prettify_js","/js/prettify.min.js?WN07fivHQSMKWy7BmHBB6w==", true)</script>
+        
+    
+
+
+
+<!-- Window Load -->
+<!-- add class for prettify -->
+<script type="text/ls-javascript" id="window-load">
+    $(window).on('load', function() {
+        // Post_Toc parent position fixed
+        $('.post-toc-wrap').parent('.mdl-menu__container').css('position', 'fixed');
+    });
+
+    
+        
+            $(function() {
+                $('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+                prettyPrint();
+                })
+        
+    
+    
+</script>
+
+<!-- MathJax Load-->
+
+
+<!-- Bing Background -->
+
+
+<script type="text/ls-javascript" id="lazy-load">
+    // Offer LazyLoad
+    queue.offer(function(){
+        $('.lazy').lazyload({
+            effect : 'show'
+        });
+    });
+
+    // Start Queue
+    $(document).ready(function(){
+        setInterval(function(){
+            queue.execNext();
+        },200);
+    });
+</script>
+
+<!-- Custom Footer -->
+
+
+
+<script>
+    (function(){
+        var scriptList = document.querySelectorAll('script[type="text/ls-javascript"]')
+
+        for (var i = 0; i < scriptList.length; ++i) {
+            var item = scriptList[i];
+            lsloader.runInlineScript(item.id,item.id);
+        }
+    })()
+console.log('\n %c © Material Theme | Version: 1.5.2 | https://github.com/viosey/hexo-theme-material %c \n', 'color:#455a64;background:#e0e0e0;padding:5px 0;border-top-left-radius:5px;border-bottom-left-radius:5px;', 'color:#455a64;background:#e0e0e0;padding:5px 0;border-top-right-radius:5px;border-bottom-right-radius:5px;');
+</script>
+
+                </main>
+            </div>
+        </body>
+    
+</html>
